@@ -158,13 +158,21 @@ async function uploadAssignment(user, folder, teacher, classCode, commentInputEl
 function fetchDocumentsInRealTime(user){
     const docRef = collection(db, "assignments")
     if (!isClassDiscussion){
-    const q = query(docRef, where("uid","==", user.uid), where("folder","==",selectedFolderElId), where("class","==",classCode)  )
-    onSnapshot(q, (querySnapshot)=>{
-        querySnapshot.forEach((doc)=>{
-            console.log(doc.data().body)
-        })
+        const q1 = query(docRef, where("uid","==", user.uid), where("folder","==",selectedFolderElId), where("class","==",classCode)  )
+        const q2 = query(docRef, where("recipient","==", user.uid), where("folder","==",selectedFolderElId), where("class","==",classCode)  )
+        onSnapshot(q1, (querySnapshot)=>{
+            querySnapshot.forEach((doc)=>{
+                console.log(doc.data().body)
+            })
+})
+onSnapshot(q2, (querySnapshot)=>{
+    querySnapshot.forEach((doc)=>{
+        console.log(doc.data().body)
     })
-}else{
+})
+
+}
+else{
     const q = query(docRef, where("isClassDiscussion", "==", true) , where("folder","==",selectedFolderElId), where("class","==",classCode)  )
     onSnapshot(q, (querySnapshot)=>{
         querySnapshot.forEach((doc)=>{
