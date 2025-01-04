@@ -8,8 +8,16 @@ button{
     background-color:var(--bg-color);
     color:var(--primary-color);
     font-family: "Lora",'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    margin: 0.25em;
 }
 input,
 button{
     border: 0.1rem solid var(--primary-color);
+}
+button.class-el{
+    display: block;
+    margin: 0;
+    width:5em;
+    overflow: auto;
+    text-align: left;
 }

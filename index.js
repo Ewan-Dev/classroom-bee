@@ -49,7 +49,10 @@ const welcomeMessageEl = document.getElementById("welcome-message")
 const classCodeInputEl = document.getElementById("class-input")
 const classCodeButtonEl = document.getElementById("class-add-button")
 
+const classFolderInputEl = document.getElementById("class-folder-admin-button")
+const classFolderInputBtnEl = document.getElementById("class-folder-admin")
 const classesDivEl = document.getElementById("classes")
+const classBtnEls = document.getElementsByClassName("class-el")
 let classCode = ""
 
 signUpBtnEl.addEventListener("click", authCreateUserWithEmailAndPassword)
@@ -57,20 +60,27 @@ signInBtnEl.addEventListener("click", authSignInWithEmailAndPassword)
 signInWithGoogleButton.addEventListener("click", authGoogle)
 
 classCodeButtonEl.addEventListener("click", createOrJoinClass)
+console.log(classBtnEls
+
+)
+for(let classBtnEl of classBtnEls){
+    classBtnEl.addEventListener("click", setCurrentClass)
+}
 /* AUTH FUNCTIONS */
 onAuthStateChanged(auth, (user)=>{
     if(user){
         console.log("logged in")
-        loggedInViewEl.style.display = "block"
-        loggedOutViewEl.style.display = "none"
+        hideElement(loggedOutViewEl)
+        showElement(loggedInViewEl)
         const displayName = user.displayName
         welcomeMessageEl.textContent = `Hello, ${displayName}`
-
+        hideElement(classFolderInputBtnEl)
+        hideElement(classFolderInputEl)
         fetchClasses(user)
     }
     else{
-        loggedOutViewEl.style.display = "block"
-        loggedInViewEl.style.display = "none"
+        hideElement(loggedInViewEl)
+        showElement(loggedOutViewEl)
     }
 })
 function authCreateUserWithEmailAndPassword(){
@@ -170,9 +180,55 @@ function fetchClasses(user){
     const classNameEl = document.createElement("h3")
     classNameEl.textContent = className
     classDivEl.appendChild(classNameEl)
+    classDivEl.setAttribute("id", className)
     classesDivEl.appendChild(classDivEl)
+    detectClassClick()
  }
 
  function clearElement(element){
     element.textContent = ""
+ }
+ 
+ async function setCurrentClass(event){
+    classCode = event.currentTarget.id 
+    const classBtnEl = document.getElementById(classCode)
+    console.log(`current class: ${classCode}`)
+    const teacherStatus = await isTeacher()
+    if (teacherStatus){
+        showElement(classFolderInputBtnEl)
+        showElement(classFolderInputEl)
+    }
+    else{
+        console.log("user is not teacher")
+        hideElement(classFolderInputBtnEl)
+        hideElement(classFolderInputEl)
+    }
+ }
+
+ function detectClassClick(){
+    for(let classBtnEl of classBtnEls){
+        classBtnEl.addEventListener("click", setCurrentClass)
+    }
+ }
+
+ async function isTeacher(){
+    const classRef = doc(db,"classes", classCode)
+    const classSnap = await getDoc(classRef)
+    console.log(classSnap.data().teacher)
+    if(classSnap.exists()  && classSnap.data().teacher === auth.currentUser.uid){
+        return true
+    }
+    else{
+        return false
+    }
+ }
+
+
+
+ /* CSS FUNCTIONS*/
+ function hideElement(element){
+    element.style.display = "none"
+ }
+ function showElement(element){
+    element.style.display = "flex"
  }
