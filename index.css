@@ -1,0 +1,9 @@
+body{
+    background-color: bisque;
+}
+.logged-in-view{
+    display:block;
+}
+.main-section{
+    display: flex;
+}

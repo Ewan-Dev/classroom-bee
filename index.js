@@ -5,11 +5,16 @@ import {getAuth,
     signInWithEmailAndPassword,
     GoogleAuthProvider,
     signInWithPopup,
-    onAuthStateChanged
+    onAuthStateChanged,
+
 } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js"
 import { getFirestore,
+    setDoc,
     collection,
-    addDoc,
+    doc,
+    arrayUnion,
+    getDoc,
+    updateDoc,
     query,
     where,
     onSnapshot
@@ -41,30 +46,26 @@ const provider = new GoogleAuthProvider();
 
 const welcomeMessageEl = document.getElementById("welcome-message")
 
-const commentInputEl = document.getElementById("comment-input")
-const commentPostBtnEl = document.getElementById("comment-post-btn")
-const folderEls = document.getElementsByClassName("folder")
-const loadDocsButton = document.getElementById("load-items")
-let selectedFolderElId = undefined
-let classCode = 1234
-let isClassDiscussion = false
+const classCodeInputEl = document.getElementById("class-input")
+const classCodeButtonEl = document.getElementById("class-add-button")
+
+let classCode = ""
+
 signUpBtnEl.addEventListener("click", authCreateUserWithEmailAndPassword)
 signInBtnEl.addEventListener("click", authSignInWithEmailAndPassword)
 signInWithGoogleButton.addEventListener("click", authGoogle)
 
-commentPostBtnEl.addEventListener("click", uploadCommentButtonClicked)
-for (let folderEl of folderEls){
-    folderEl.addEventListener("click", getFolderElId)
-}
-
+classCodeButtonEl.addEventListener("click", createOrJoinClass)
 /* AUTH FUNCTIONS */
 onAuthStateChanged(auth, (user)=>{
     if(user){
+        console.log("logged in")
         loggedInViewEl.style.display = "flex"
         loggedOutViewEl.style.display = "none"
-        const uid = user.uid
         const displayName = user.displayName
         welcomeMessageEl.textContent = `Hello, ${displayName}`
+
+        fetchClasses(user)
     }
     else{
         loggedOutViewEl.style.display = "flex"
@@ -117,68 +118,45 @@ function authGoogle(){
  })
  
 }
-
 /* FIRESTORE */
-// Finds the folder id
-function getFolderElId(event){
-    selectedFolderElId = event.currentTarget.id
-    console.log(selectedFolderElId)
 
-}
-
-function uploadCommentButtonClicked(){
-    const user = auth.currentUser
-    const teacher = "example"
-    const folderElId = selectedFolderElId
-    if (folderElId){
-    uploadAssignment(user, folderElId, teacher, classCode, commentInputEl.value, isClassDiscussion)
-    } else{
-        console.log("please select folder")
-    }
-}
-//upload to firestore db
-async function uploadAssignment(user, folder, teacher, classCode, commentInputElValue, isClassDiscussion){
-    try{
-        const docRef = await addDoc(collection(db, "assignments"),{
-            body:commentInputElValue,
-            folder:folder,
-            uid: user.uid,
-            recipient: teacher, //know who to send
-            class: classCode,
-            isClassDiscussion:isClassDiscussion
-        })
-        console.log(`Document written with ID: ${docRef.id}`)
-        fetchDocumentsInRealTime(user)
-        
-    }
-    catch(err){
-        console.log(err)
-    }
-}
-function fetchDocumentsInRealTime(user){
-    const docRef = collection(db, "assignments")
-    if (!isClassDiscussion){
-        const q1 = query(docRef, where("uid","==", user.uid), where("folder","==",selectedFolderElId), where("class","==",classCode)  )
-        const q2 = query(docRef, where("recipient","==", user.uid), where("folder","==",selectedFolderElId), where("class","==",classCode)  )
-        onSnapshot(q1, (querySnapshot)=>{
-            querySnapshot.forEach((doc)=>{
-                console.log(doc.data().body)
+async function createOrJoinClass(){
+    const userId = auth.currentUser.uid
+    classCode = classCodeInputEl.value
+    const classRef = doc(db, "classes", classCode)
+    const classSnap = await getDoc(classRef)
+    if(!classSnap.exists() || classSnap.data().teacher == userId){
+        try{
+            setDoc(classRef, {
+                code: classCode,
+                teacher: userId,
+                members: arrayUnion(userId)
             })
-})
-onSnapshot(q2, (querySnapshot)=>{
-    querySnapshot.forEach((doc)=>{
-        console.log(doc.data().body)
-    })
-})
+        }
+        catch(err){
+            console.error(err)
+        }
+    }
+    else{
+        try{
+            updateDoc(classRef, {
+                students: arrayUnion(userId),
+                members: arrayUnion(userId)
+            })
+        }
+        catch(err){
+            console.error(err)
+        }
 
-}
-else{
-    const q = query(docRef, where("isClassDiscussion", "==", true) , where("folder","==",selectedFolderElId), where("class","==",classCode)  )
-    onSnapshot(q, (querySnapshot)=>{
-        querySnapshot.forEach((doc)=>{
-            console.log(doc)
-        })
-    })
+    }
 }
 
+function fetchClasses(user){
+    const classRef = collection(db, "classes")
+    const q = query(classRef, where("members", "array-contains", user.uid))
+    onSnapshot(q, (querySnapshot) => {
+        querySnapshot.forEach(doc => {
+            
+        });
+    })
 }
