@@ -1,9 +1,15 @@
-body{
-    background-color: bisque;
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Trocchi&display=swap');
+
+:root,
+input,
+button{
+    --bg-color: rgb(210, 210, 210);
+    --primary-color: rgb(52, 52, 52);
+    background-color:var(--bg-color);
+    color:var(--primary-color);
+    font-family: "Lora",'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 }
-.logged-in-view{
-    display:block;
-}
-.main-section{
-    display: flex;
+input,
+button{
+    border: 0.1rem solid var(--primary-color);
 }

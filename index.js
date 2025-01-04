@@ -61,7 +61,7 @@ classCodeButtonEl.addEventListener("click", createOrJoinClass)
 onAuthStateChanged(auth, (user)=>{
     if(user){
         console.log("logged in")
-        loggedInViewEl.style.display = "flex"
+        loggedInViewEl.style.display = "block"
         loggedOutViewEl.style.display = "none"
         const displayName = user.displayName
         welcomeMessageEl.textContent = `Hello, ${displayName}`
@@ -69,7 +69,7 @@ onAuthStateChanged(auth, (user)=>{
         fetchClasses(user)
     }
     else{
-        loggedOutViewEl.style.display = "flex"
+        loggedOutViewEl.style.display = "block"
         loggedInViewEl.style.display = "none"
     }
 })
@@ -164,7 +164,8 @@ function fetchClasses(user){
 }
 
  function renderClasses(docData){
-    const classDivEl = document.createElement("div")
+    const classDivEl = document.createElement("button")
+    classDivEl.classList.add("class-el")
     const className = docData.code
     const classNameEl = document.createElement("h3")
     classNameEl.textContent = className
