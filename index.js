@@ -49,6 +49,7 @@ const welcomeMessageEl = document.getElementById("welcome-message")
 const classCodeInputEl = document.getElementById("class-input")
 const classCodeButtonEl = document.getElementById("class-add-button")
 
+const classesDivEl = document.getElementById("classes")
 let classCode = ""
 
 signUpBtnEl.addEventListener("click", authCreateUserWithEmailAndPassword)
@@ -155,8 +156,22 @@ function fetchClasses(user){
     const classRef = collection(db, "classes")
     const q = query(classRef, where("members", "array-contains", user.uid))
     onSnapshot(q, (querySnapshot) => {
+        clearElement(classesDivEl)  
         querySnapshot.forEach(doc => {
-            
+            renderClasses(doc.data())
         });
     })
 }
+
+ function renderClasses(docData){
+    const classDivEl = document.createElement("div")
+    const className = docData.code
+    const classNameEl = document.createElement("h3")
+    classNameEl.textContent = className
+    classDivEl.appendChild(classNameEl)
+    classesDivEl.appendChild(classDivEl)
+ }
+
+ function clearElement(element){
+    element.textContent = ""
+ }
