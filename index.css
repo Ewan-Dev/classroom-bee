@@ -14,10 +14,18 @@ input,
 button{
     border: 0.1rem solid var(--primary-color);
 }
-button.class-el{
-    display: block;
+button.class-el,
+button.folder-el
+{
+    display: flex;
+    justify-content: left;
+    align-content: center;
     margin: 0;
-    width:5em;
-    overflow: auto;
+    width:7.5em;
+    height: 3em;
+    overflow: hidden;
     text-align: left;
+}
+#classes-folders-assignments-container{
+    display: flex;
 }

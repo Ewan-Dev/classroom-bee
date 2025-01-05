@@ -17,7 +17,10 @@ import { getFirestore,
     updateDoc,
     query,
     where,
-    onSnapshot
+    onSnapshot,
+    getDocs,
+    or,
+    and
  } from 'https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js'
 
 const firebaseConfig = {
@@ -49,23 +52,48 @@ const welcomeMessageEl = document.getElementById("welcome-message")
 const classCodeInputEl = document.getElementById("class-input")
 const classCodeButtonEl = document.getElementById("class-add-button")
 
-const classFolderInputEl = document.getElementById("class-folder-admin-button")
-const classFolderInputBtnEl = document.getElementById("class-folder-admin")
+const classFolderInputBtnEl = document.getElementById("class-folder-admin-button")
+const classFolderInputEl = document.getElementById("class-folder-admin-input")
 const classesDivEl = document.getElementById("classes")
 const classBtnEls = document.getElementsByClassName("class-el")
+
 let classCode = ""
+let currentFolder = ""
+let currentAssignment = ""
+
+const foldersDivEl = document.getElementById("folders")
+const folderBtnEls = document.getElementsByClassName("folder-el")
+
+const classAssignmentInputBtnEl = document.getElementById("class-assignment-admin-button")
+const classAssignmentInputEl = document.getElementById("class-assignment-admin-input")
+
+const assignmentsDiv = document.getElementById("assignments")
+const assignmentContentDiv = document.getElementById("assignment-content-container")
+
+const assignmentBtnEls = document.getElementsByClassName("assignment-el")
 
 signUpBtnEl.addEventListener("click", authCreateUserWithEmailAndPassword)
 signInBtnEl.addEventListener("click", authSignInWithEmailAndPassword)
 signInWithGoogleButton.addEventListener("click", authGoogle)
 
-classCodeButtonEl.addEventListener("click", createOrJoinClass)
-console.log(classBtnEls
 
-)
-for(let classBtnEl of classBtnEls){
-    classBtnEl.addEventListener("click", setCurrentClass)
-}
+
+classCodeButtonEl.addEventListener("click", createOrJoinClass)
+classFolderInputBtnEl.addEventListener("click", function(){
+    const classFolderInputElValue = classFolderInputEl.value
+    console.log(classFolderInputElValue)
+    addFolder(classFolderInputElValue)
+} )
+
+classAssignmentInputBtnEl.addEventListener("click", function(){
+    const classAssignmentInputElValue = classAssignmentInputEl.value
+    if (classAssignmentInputElValue){
+    addAssignment(classAssignmentInputElValue)
+    }
+    else{
+        console.error("empty assignment creation input")
+    }
+})
 /* AUTH FUNCTIONS */
 onAuthStateChanged(auth, (user)=>{
     if(user){
@@ -76,6 +104,8 @@ onAuthStateChanged(auth, (user)=>{
         welcomeMessageEl.textContent = `Hello, ${displayName}`
         hideElement(classFolderInputBtnEl)
         hideElement(classFolderInputEl)
+        hideElement(classAssignmentInputBtnEl)
+        hideElement(classAssignmentInputEl)
         fetchClasses(user)
     }
     else{
@@ -174,19 +204,20 @@ function fetchClasses(user){
 }
 
  function renderClasses(docData){
-    const classDivEl = document.createElement("button")
-    classDivEl.classList.add("class-el")
+    const classButtonEl = document.createElement("button")
+    classButtonEl.classList.add("class-el")
     const className = docData.code
     const classNameEl = document.createElement("h3")
     classNameEl.textContent = className
-    classDivEl.appendChild(classNameEl)
-    classDivEl.setAttribute("id", className)
-    classesDivEl.appendChild(classDivEl)
+    classButtonEl.appendChild(classNameEl)
+    classButtonEl.setAttribute("id", className)
+    classesDivEl.appendChild(classButtonEl)
     detectClassClick()
  }
 
  function clearElement(element){
     element.textContent = ""
+
  }
  
  async function setCurrentClass(event){
@@ -194,14 +225,19 @@ function fetchClasses(user){
     const classBtnEl = document.getElementById(classCode)
     console.log(`current class: ${classCode}`)
     const teacherStatus = await isTeacher()
+    fetchFolders()
     if (teacherStatus){
         showElement(classFolderInputBtnEl)
         showElement(classFolderInputEl)
+        showElement(classAssignmentInputBtnEl)
+        showElement(classAssignmentInputEl)
     }
     else{
         console.log("user is not teacher")
         hideElement(classFolderInputBtnEl)
         hideElement(classFolderInputEl)
+        hideElement(classAssignmentInputBtnEl)
+        hideElement(classAssignmentInputEl)
     }
  }
 
@@ -214,7 +250,6 @@ function fetchClasses(user){
  async function isTeacher(){
     const classRef = doc(db,"classes", classCode)
     const classSnap = await getDoc(classRef)
-    console.log(classSnap.data().teacher)
     if(classSnap.exists()  && classSnap.data().teacher === auth.currentUser.uid){
         return true
     }
@@ -223,6 +258,102 @@ function fetchClasses(user){
     }
  }
 
+function addFolder(folderName){
+    const classRef = doc(db, "classes", classCode)
+    updateDoc(classRef, {
+        folders: arrayUnion(folderName)
+    })
+    }
+
+
+
+ async function fetchFolders(){
+    const classRef = doc(db, "classes", classCode)
+    const classSnap = await getDoc(classRef)
+    const classData = classSnap.data()
+    const classFolders = classData.folders
+    renderFolders(classFolders)
+ }
+ function renderFolders(foldersArray){
+    clearElement(foldersDivEl)
+    foldersArray.forEach( folderName =>{
+        const folderButtonEl = document.createElement("button")
+        const folderNameEl = document.createElement("p")
+        folderButtonEl.classList.add("folder-el")
+        folderNameEl.textContent = folderName
+        folderButtonEl.appendChild(folderNameEl)
+        foldersDivEl.appendChild(folderButtonEl)
+    })
+    setCurrentFolder()
+ }
+
+function setCurrentFolder(){
+    for(let folderBtn of folderBtnEls){
+        folderBtn.addEventListener("click", function(){
+            currentFolder = folderBtn.textContent
+            fetchAssignments()
+        })
+    }
+}
+
+
+ function addAssignment(assignmentName){
+  const classRef = doc(db, "classes", classCode)
+  updateDoc(classRef, {
+    assignments: arrayUnion(assignmentName)
+  })
+}
+
+async function fetchAssignments(){
+    const classRef = doc(db, "classes", classCode)
+    const classSnap = await getDoc(classRef)
+    const classData = classSnap.data()
+    const classAssignments = classData.assignments
+    renderAssignments(classAssignments)
+}
+
+function renderAssignments(assignmentsArray){
+
+    assignmentsArray.forEach((assignmentName) => {
+        const assignmentButtonEl = document.createElement("button")
+        const assignmentNameEl = document.createElement("p")
+        assignmentButtonEl.classList.add("assignment-el")
+        assignmentNameEl.textContent = assignmentName
+        assignmentButtonEl.appendChild(assignmentNameEl)
+        assignmentsDiv.appendChild(assignmentButtonEl)
+        setCurrentAssignment(assignmentButtonEl)
+    })
+}
+
+function setCurrentAssignment(assignmentButton){
+
+        assignmentButton.addEventListener("click", function(){
+            currentAssignment = assignmentButton.textContent
+            fetchAssignmentContent()
+        })
+    }
+
+
+async function fetchAssignmentContent(){
+    
+    const assignmentRef = collection(db, "assignments")
+    const user = auth.currentUser
+        const q = query(assignmentRef, and(or(where("recipient","==",user.uid),where("uid","==", user.uid)), where("folder","==", currentFolder), where("class","==", classCode), where("assignment","==", currentAssignment)))
+        let querySnapshot = await getDocs(q)
+        console.log("Query returned", querySnapshot.size, "documents");
+        querySnapshot.forEach((message) =>{
+            console.log(message.data())
+        })
+
+}
+function renderAssignmentContent(messageData){
+    const messageDiv = document.createElement("div")
+        const messageContentEl = document.createElement("p")
+        messageDiv.classList.add("assignment-content-el")
+        messageContentEl.textContent = messageData.body
+        messageDiv.appendChild(messageContentEl)
+        assignmentContentDiv.appendChild(messageDiv)
+}
 
 
  /* CSS FUNCTIONS*/
@@ -232,3 +363,4 @@ function fetchClasses(user){
  function showElement(element){
     element.style.display = "flex"
  }
+
