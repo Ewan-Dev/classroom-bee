@@ -6,6 +6,7 @@ import {getAuth,
     GoogleAuthProvider,
     signInWithPopup,
     onAuthStateChanged,
+    updateProfile
 
 } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js"
 import { getFirestore,
@@ -78,6 +79,7 @@ const pfpAuthInputEl = document.getElementById("auth-pfp-input-el")
 const pfpAuthBtnEl = document.getElementById("auth-pfp-btn-el")
 
 const settingsBtnEl  = document.getElementById("settings-btn")
+const settingsPfpEl = document.getElementById("settings-pfp-el")
 const settingsDiv = document.getElementById("settings-container")
 
 signUpBtnEl.addEventListener("click", authCreateUserWithEmailAndPassword)
@@ -104,10 +106,11 @@ classAssignmentInputBtnEl.addEventListener("click", function(){
 settingsBtnEl.addEventListener("click", function(){
     showElement(settingsDiv)
     loadUserData()
-
-
-
 })
+
+displayNameAuthBtnEl.addEventListener("click", updateUserDisplayName)
+
+pfpAuthBtnEl.addEventListener("click", updateUserPfp)
 /* AUTH FUNCTIONS */
 onAuthStateChanged(auth, (user)=>{
     if(user){
@@ -185,14 +188,45 @@ function loadUserData(){
     else{
         displayNameAuthInputEl.textContent = ""
     }
-    if (user.displayName){
-        pfpAuthInputEl.textContent = user.photoURL
+    if (user.photoURL){
+        settingsPfpEl.src = user.photoURL
         
     }
     else{
-        pfpAuthInputEl.textContent = ""
+        settingsPfpEl.src = "./assets/default-pfp.png"
     }
   
+}
+function updateUserDisplayName(){
+    if(displayNameAuthInputEl.value){
+    updateProfile(auth.currentUser, {
+        displayName: displayNameAuthInputEl.value
+    }).then(()=>{
+        console.log("updated user display name")
+    })
+    .catch((err)=>{
+        console.error(err)
+    })
+}
+else{
+    console.error("please enter your name")
+}
+}
+
+function updateUserPfp(){
+    if(pfpAuthInputEl.value){
+    updateProfile(auth.currentUser, {
+        photoURL: pfpAuthInputEl.value
+    }).then(()=>{
+        console.log("updated user pfp")
+    })
+    .catch((err)=>{
+        console.error(err)
+    })
+}
+else{
+    console.error("please enter your name")
+}
 }
 
 /* FIRESTORE */

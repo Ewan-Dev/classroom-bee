@@ -50,3 +50,7 @@ button.folder-el
     border-radius: 0.5em;
     padding: 0.1em 0.2em;
 }
+#settings-pfp-el{
+    border-radius: 50%;
+    width:2.5em
+}
