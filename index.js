@@ -71,13 +71,18 @@ const classAssignmentInputEl = document.getElementById("class-assignment-admin-i
 const assignmentsDiv = document.getElementById("assignments")
 const assignmentContentDiv = document.getElementById("assignment-content-container")
 
-const assignmentBtnEls = document.getElementsByClassName("assignment-el")
+const displayNameAuthInputEl = document.getElementById("auth-display-name-input-el")
+const displayNameAuthBtnEl = document.getElementById("auth-display-name-btn-el")
+
+const pfpAuthInputEl = document.getElementById("auth-pfp-input-el")
+const pfpAuthBtnEl = document.getElementById("auth-pfp-btn-el")
+
+const settingsBtnEl  = document.getElementById("settings-btn")
+const settingsDiv = document.getElementById("settings-container")
 
 signUpBtnEl.addEventListener("click", authCreateUserWithEmailAndPassword)
 signInBtnEl.addEventListener("click", authSignInWithEmailAndPassword)
 signInWithGoogleButton.addEventListener("click", authGoogle)
-
-
 
 classCodeButtonEl.addEventListener("click", createOrJoinClass)
 classFolderInputBtnEl.addEventListener("click", function(){
@@ -95,6 +100,14 @@ classAssignmentInputBtnEl.addEventListener("click", function(){
         console.error("empty assignment creation input")
     }
 })
+
+settingsBtnEl.addEventListener("click", function(){
+    showElement(settingsDiv)
+    loadUserData()
+
+
+
+})
 /* AUTH FUNCTIONS */
 onAuthStateChanged(auth, (user)=>{
     if(user){
@@ -107,6 +120,7 @@ onAuthStateChanged(auth, (user)=>{
         hideElement(classFolderInputEl)
         hideElement(classAssignmentInputBtnEl)
         hideElement(classAssignmentInputEl)
+        hideElement(settingsDiv)
         fetchClasses(user)
     }
     else{
@@ -160,6 +174,27 @@ function authGoogle(){
  })
  
 }
+
+function loadUserData(){
+    const user = auth.currentUser
+    console.log("test")
+    if (user.displayName){
+        displayNameAuthInputEl.textContent = user.displayName
+        
+    }
+    else{
+        displayNameAuthInputEl.textContent = ""
+    }
+    if (user.displayName){
+        pfpAuthInputEl.textContent = user.photoURL
+        
+    }
+    else{
+        pfpAuthInputEl.textContent = ""
+    }
+  
+}
+
 /* FIRESTORE */
 
 async function createOrJoinClass(){
@@ -396,6 +431,16 @@ function renderAssignmentContent(messageData){
         messageDiv.appendChild(messageSentByEl)
         assignmentContentDiv.appendChild(messageDiv)
 }
+
+
+
+
+
+
+
+
+
+
 
 
  /* CSS FUNCTIONS*/

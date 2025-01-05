@@ -22,7 +22,7 @@
 
 
     <section id="logged-in-view">
-    <h1 id="welcome-message"> 09</h1>
+    <h1 id="welcome-message"></h1>
     <section id="main-section">
         <div id="classes-join-create">
             <input id="class-input" placeholder="code">
@@ -48,6 +48,33 @@
         </div>
         <div id="assignment-content-container"></div>
     </section>
+    <button id="settings-btn">⚙️ settings</button>
+    <div id="settings-container">
+        <h1>Settings</h1>
+
+    <div class="label-input-container">
+        <label for="auth-display-name-input-el">your name:</label>
+        <input id="auth-display-name-input-el">
+        <button id="auth-display-name-btn-el">update</button>
+        </div>
+
+        <div class="label-input-container">
+            <label for="auth-pfp-input-el">your profile picture: URL</label>
+            <input id="auth-pfp-input-el">
+            <button id="auth-pfpbtn-el">update</button>
+            </div>
+            <br>
+            <p class="notice">🚧 email and password change coming soon</p>
+            <div class="label-input-container">
+                <label for="auth-password-input-el">new password</label>
+                <input id="auth-password-input-el">
+            </div>
+
+            <div class="label-input-container">
+                <label for="auth-email-input-el">new email</label>
+                <input id="auth-email-input-el">
+            </div>
+    </div>
     <script src="./index.js" type="module"></script>
 </body>
 </html>

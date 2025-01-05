@@ -40,3 +40,13 @@ button.folder-el
 .assignment-content-p{
     margin: 0.1em;
 }
+.label-input-container{
+    display: block;
+}
+.notice{
+    background-color: rgba(200, 82, 82, 0.565);
+    display: inline-block;
+    color: var(--primary-color);
+    border-radius: 0.5em;
+    padding: 0.1em 0.2em;
+}

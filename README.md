@@ -14,6 +14,8 @@
 - [ ] class discussion
 - [ ] login page (365)
 - [ ] home screen
+- [ ] email and password update
+- [ ] useGetToken
 <hr>
 <h3>🍔 tech stack</h3>
 <table>
