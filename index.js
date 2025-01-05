@@ -6,7 +6,8 @@ import {getAuth,
     GoogleAuthProvider,
     signInWithPopup,
     onAuthStateChanged,
-    updateProfile
+    updateProfile,
+    getToken
 
 } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js"
 import { getFirestore,
@@ -115,6 +116,7 @@ pfpAuthBtnEl.addEventListener("click", updateUserPfp)
 onAuthStateChanged(auth, (user)=>{
     if(user){
         console.log("logged in")
+        console.log(user.getToken())
         hideElement(loggedOutViewEl)
         showElement(loggedInViewEl)
         const displayName = user.displayName
