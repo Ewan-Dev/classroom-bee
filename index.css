@@ -29,3 +29,14 @@ button.folder-el
 #classes-folders-assignments-container{
     display: flex;
 }
+.assignment-content-div{
+    background-color: var(--primary-color);
+    color:var(--bg-color);
+    padding: 0.1em;
+    margin: 0.4em;
+    border-radius: 0.2em;
+
+}
+.assignment-content-p{
+    margin: 0.1em;
+}

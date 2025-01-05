@@ -20,7 +20,8 @@ import { getFirestore,
     onSnapshot,
     getDocs,
     or,
-    and
+    and,
+    addDoc
  } from 'https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js'
 
 const firebaseConfig = {
@@ -296,13 +297,43 @@ function setCurrentFolder(){
     }
 }
 
+async function teacherUid(){
+    try{
+    const classRef = doc(db,"classes", classCode)
+    const classSnap = await getDoc(classRef)
+    const uid = classSnap.data().teacher 
+    return uid
+    }
+    catch(err){
+        console.error(err)
+        throw err
+    }
+ }
 
- function addAssignment(assignmentName){
+
+ async function addAssignment(assignmentName){
+    const user = auth.currentUser
   const classRef = doc(db, "classes", classCode)
   updateDoc(classRef, {
     assignments: arrayUnion(assignmentName)
   })
+  const assignmentRef = collection(db, "assignments")
+  const teacherId =  await teacherUid()
+  console.log(user.displayName)
+    addDoc(assignmentRef, {
+        assignment: currentAssignment,
+        body: assignmentName,
+        class: classCode,
+        folder: currentFolder,
+        isClassDiscussion: false,
+        recipient:teacherId,
+        uid: user.uid,
+        userDisplayName: user.displayName
+    }
+    )
 }
+
+
 
 async function fetchAssignments(){
     const classRef = doc(db, "classes", classCode)
@@ -339,19 +370,30 @@ async function fetchAssignmentContent(){
     const assignmentRef = collection(db, "assignments")
     const user = auth.currentUser
         const q = query(assignmentRef, and(or(where("recipient","==",user.uid),where("uid","==", user.uid)), where("folder","==", currentFolder), where("class","==", classCode), where("assignment","==", currentAssignment)))
-        let querySnapshot = await getDocs(q)
-        console.log("Query returned", querySnapshot.size, "documents");
-        querySnapshot.forEach((message) =>{
-            console.log(message.data())
+        onSnapshot(q, (querySnapshot) => {
+            clearElement(assignmentContentDiv)
+            querySnapshot.forEach((message) => {
+                renderAssignmentContent(message.data())
+            })
+            
         })
+
 
 }
 function renderAssignmentContent(messageData){
     const messageDiv = document.createElement("div")
-        const messageContentEl = document.createElement("p")
-        messageDiv.classList.add("assignment-content-el")
+    const messageContentEl = document.createElement("p")
+    const messageSentByEl = document.createElement("p")
+
+        messageDiv.classList.add("assignment-content-div")
+
+        messageContentEl.classList.add("assignment-content-p")
         messageContentEl.textContent = messageData.body
+
+        messageSentByEl.textContent = messageData.userDisplayName
+
         messageDiv.appendChild(messageContentEl)
+        messageDiv.appendChild(messageSentByEl)
         assignmentContentDiv.appendChild(messageDiv)
 }
 
