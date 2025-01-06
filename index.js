@@ -6,8 +6,7 @@ import {getAuth,
     GoogleAuthProvider,
     signInWithPopup,
     onAuthStateChanged,
-    updateProfile,
-    getToken
+    updateProfile
 
 } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js"
 import { getFirestore,
