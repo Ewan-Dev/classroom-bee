@@ -115,7 +115,6 @@ pfpAuthBtnEl.addEventListener("click", updateUserPfp)
 onAuthStateChanged(auth, (user)=>{
     if(user){
         console.log("logged in")
-        console.log(user.getToken())
         hideElement(loggedOutViewEl)
         showElement(loggedInViewEl)
         const displayName = user.displayName
@@ -483,6 +482,6 @@ function renderAssignmentContent(messageData){
     element.style.display = "none"
  }
  function showElement(element){
-    element.style.display = "flex"
+    element.style.display = "block"
  }
 

@@ -3,16 +3,21 @@
 :root,
 input,
 button{
-    --bg-color: rgb(210, 210, 210);
-    --primary-color: rgb(52, 52, 52);
-    background-color:var(--bg-color);
-    color:var(--primary-color);
+    --bg-color: 144, 165, 231;
+    --primary-color: 44, 35, 168;
+    background-color:rgb(var(--bg-color));
+    color:rgb(var(--primary-color));
     font-family: "Lora",'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
     margin: 0.25em;
+    border-radius: 0.5em;
 }
 input,
 button{
-    border: 0.1rem solid var(--primary-color);
+    border: 0.1rem solid rgb(var(--primary-color));
+
+}
+input::placeholder{
+    color: rgba(var(--primary-color), 0.5);
 }
 button.class-el,
 button.folder-el
@@ -21,17 +26,18 @@ button.folder-el
     justify-content: left;
     align-content: center;
     margin: 0;
-    width:7.5em;
+    width:7em;
     height: 3em;
     overflow: hidden;
     text-align: left;
+
 }
 #classes-folders-assignments-container{
     display: flex;
 }
 .assignment-content-div{
-    background-color: var(--primary-color);
-    color:var(--bg-color);
+    background-color: rgb(var(--primary-color));
+    color:rgb(var(--bg-color));
     padding: 0.1em;
     margin: 0.4em;
     border-radius: 0.2em;
@@ -46,11 +52,27 @@ button.folder-el
 .notice{
     background-color: rgba(200, 82, 82, 0.565);
     display: inline-block;
-    color: var(--primary-color);
+    color: rgb(var(--primary-color));
     border-radius: 0.5em;
     padding: 0.1em 0.2em;
 }
 #settings-pfp-el{
     border-radius: 50%;
     width:2.5em
+}
+#logged-in-view{
+    display: block;
+}
+#google-signin-btn{
+    display: flex;
+    align-items: center;
+    width: 13em;
+    height: 2.5em;
+}
+#google-logo path {
+    fill: rgb(var(--primary-color));
+}
+#google-logo{
+    margin: 0 0.2em;
+    width: 1.25em;
 }
