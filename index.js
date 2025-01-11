@@ -276,7 +276,9 @@ async function createOrJoinClass(){
 function fetchClasses(user){
     const classRef = collection(db, "classes")
     const q = query(classRef, where("members", "array-contains", user.uid))
+    console.log("hi")
     onSnapshot(q, (querySnapshot) => {
+        console.log("x")
         clearElement(classesDivEl)  
         querySnapshot.forEach(doc => {
             renderClasses(doc.data())
@@ -339,20 +341,23 @@ function fetchClasses(user){
     }
  }
 
-function addFolder(folderName){
+async function addFolder(folderName){
     const classRef = doc(db, "classes", classCode)
     const folderRef = collection(db, "folders")
+    const userId = auth.currentUser.uid
     updateDoc(classRef, {
         folders: arrayUnion(folderName)
     })
     addDoc(folderRef, {
         class: classCode,
-        folderName: folderName
+        folderName: folderName,
+        teacher: userId,
+        members: arrayUnion(userId)
+
     })
+
     loadUserData()
 }
-
-
 
  async function fetchFolders(){
     const classRef = doc(db, "classes", classCode)
@@ -426,7 +431,7 @@ async function addPost(content){
           class: classCode,
           folder: currentFolder,
           isClassDiscussion: false,
-          recipient:teacherId,
+          recipient:arrayUnion(teacherId),
           uid: user.uid,
           userDisplayName: user.displayName
       }
