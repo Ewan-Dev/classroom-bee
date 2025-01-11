@@ -72,6 +72,9 @@ const classAssignmentInputEl = document.getElementById("class-assignment-admin-i
 const assignmentsDiv = document.getElementById("assignments")
 const assignmentContentDiv = document.getElementById("assignment-content-container")
 
+const classPostInputEl = document.getElementById("class-post-admin-input")
+const classPostInputBtnEl = document.getElementById("class-post-admin-button")
+
 const displayNameAuthInputEl = document.getElementById("auth-display-name-input-el")
 const displayNameAuthBtnEl = document.getElementById("auth-display-name-btn-el")
 
@@ -81,6 +84,7 @@ const pfpAuthBtnEl = document.getElementById("auth-pfp-btn-el")
 const settingsBtnEl  = document.getElementById("settings-btn")
 const settingsPfpEl = document.getElementById("settings-pfp-el")
 const settingsDiv = document.getElementById("settings-container")
+
 
 signUpBtnEl.addEventListener("click", authCreateUserWithEmailAndPassword)
 signInBtnEl.addEventListener("click", authSignInWithEmailAndPassword)
@@ -101,6 +105,11 @@ classAssignmentInputBtnEl.addEventListener("click", function(){
     else{
         console.error("empty assignment creation input")
     }
+})
+classPostInputBtnEl.addEventListener("click", function(){
+    const classPostInputElValue = classPostInputEl.value
+    addPost(classPostInputElValue)
+    
 })
 
 settingsBtnEl.addEventListener("click", function(){
@@ -123,6 +132,8 @@ onAuthStateChanged(auth, (user)=>{
         hideElement(classFolderInputEl)
         hideElement(classAssignmentInputBtnEl)
         hideElement(classAssignmentInputEl)
+        hideElement(classPostInputBtnEl)
+        hideElement(classPostInputEl)
         hideElement(settingsDiv)
         fetchClasses(user)
     }
@@ -299,8 +310,6 @@ function fetchClasses(user){
     if (teacherStatus){
         showElement(classFolderInputBtnEl)
         showElement(classFolderInputEl)
-        showElement(classAssignmentInputBtnEl)
-        showElement(classAssignmentInputEl)
     }
     else{
         console.log("user is not teacher")
@@ -308,6 +317,8 @@ function fetchClasses(user){
         hideElement(classFolderInputEl)
         hideElement(classAssignmentInputBtnEl)
         hideElement(classAssignmentInputEl)
+        hideElement(classPostInputBtnEl)
+        hideElement(classPostInputEl)
     }
  }
 
@@ -330,10 +341,16 @@ function fetchClasses(user){
 
 function addFolder(folderName){
     const classRef = doc(db, "classes", classCode)
+    const folderRef = collection(db, "folders")
     updateDoc(classRef, {
         folders: arrayUnion(folderName)
     })
-    }
+    addDoc(folderRef, {
+        class: classCode,
+        folderName: folderName
+    })
+    loadUserData()
+}
 
 
 
@@ -361,6 +378,7 @@ function setCurrentFolder(){
     for(let folderBtn of folderBtnEls){
         folderBtn.addEventListener("click", function(){
             currentFolder = folderBtn.textContent
+            showAssignmentControls()
             fetchAssignments()
         })
     }
@@ -382,37 +400,55 @@ async function teacherUid(){
 
  async function addAssignment(assignmentName){
     const user = auth.currentUser
-  const classRef = doc(db, "classes", classCode)
-  updateDoc(classRef, {
-    assignments: arrayUnion(assignmentName)
+  const folderRef = collection(db, "folders")
+  console.log(345678)
+  const q = query(folderRef, where("class", "==", classCode), where("folderName", "==", currentFolder))
+  console.log(q)
+  onSnapshot(q, (querySnapshot)=>{
+    querySnapshot.forEach((folderDoc)=>{
+        console.log(folderDoc.id)
+        const folderDocRef = doc(db, "folders", folderDoc.id)
+        updateDoc(folderDocRef, {
+        assignments: arrayUnion(assignmentName)
+         })
+    })
   })
-  const assignmentRef = collection(db, "assignments")
-  const teacherId =  await teacherUid()
-  console.log(user.displayName)
-    addDoc(assignmentRef, {
-        assignment: currentAssignment,
-        body: assignmentName,
-        class: classCode,
-        folder: currentFolder,
-        isClassDiscussion: false,
-        recipient:teacherId,
-        uid: user.uid,
-        userDisplayName: user.displayName
-    }
-    )
 }
 
+async function addPost(content){
+    const user = auth.currentUser
+    const assignmentRef = collection(db, "posts")
+    const teacherId =  await teacherUid()
+    console.log(user.displayName)
+      addDoc(assignmentRef, {
+          assignment: currentAssignment,
+          body: content,
+          class: classCode,
+          folder: currentFolder,
+          isClassDiscussion: false,
+          recipient:teacherId,
+          uid: user.uid,
+          userDisplayName: user.displayName
+      }
+      )
+}
 
 
 async function fetchAssignments(){
-    const classRef = doc(db, "classes", classCode)
-    const classSnap = await getDoc(classRef)
-    const classData = classSnap.data()
-    const classAssignments = classData.assignments
-    renderAssignments(classAssignments)
+    const foldersRef = collection(db, "folders")
+    const q = query(foldersRef, where("class", "==", classCode),where("folderName", "==", currentFolder) )
+    onSnapshot(q, (querySnapshot) => {
+        querySnapshot.forEach((assignment) =>{
+            const folderData = assignment.data()
+            const folderAssignments = folderData.assignments
+            console.log(folderAssignments)
+            renderPosts(folderAssignments)
+        })
+    })
+    
 }
 
-function renderAssignments(assignmentsArray){
+function renderPosts(assignmentsArray){
 
     assignmentsArray.forEach((assignmentName) => {
         const assignmentButtonEl = document.createElement("button")
@@ -430,13 +466,14 @@ function setCurrentAssignment(assignmentButton){
         assignmentButton.addEventListener("click", function(){
             currentAssignment = assignmentButton.textContent
             fetchAssignmentContent()
+            showPostControls()
         })
     }
 
 
 async function fetchAssignmentContent(){
     
-    const assignmentRef = collection(db, "assignments")
+    const assignmentRef = collection(db, "posts")
     const user = auth.currentUser
         const q = query(assignmentRef, and(or(where("recipient","==",user.uid),where("uid","==", user.uid)), where("folder","==", currentFolder), where("class","==", classCode), where("assignment","==", currentAssignment)))
         onSnapshot(q, (querySnapshot) => {
@@ -466,7 +503,28 @@ function renderAssignmentContent(messageData){
         assignmentContentDiv.appendChild(messageDiv)
 }
 
-
+async function showAssignmentControls(){
+    const teacherStatus = await isTeacher()
+    if(isTeacher){
+    showElement(classAssignmentInputBtnEl)
+    showElement(classAssignmentInputEl)
+    }
+    else{
+        hideElement(classAssignmentInputBtnEl)
+        hideElement(classAssignmentInputEl) 
+    }
+}
+async function showPostControls(){
+    const teacherStatus = await isTeacher()
+    if(isTeacher){
+    showElement(classPostInputBtnEl)
+    showElement(classPostInputEl)
+    }
+    else{
+        hideElement(classPostInputBtnEl)
+        hideElement(classPostInputEl) 
+    }
+}
 
 
 
