@@ -135,6 +135,7 @@ onAuthStateChanged(auth, (user)=>{
         hideElement(classPostInputBtnEl)
         hideElement(classPostInputEl)
         hideElement(settingsDiv)
+        addUserToDb(user);
         fetchClasses(user)
     }
     else{
@@ -188,7 +189,13 @@ function authGoogle(){
  })
  
 }
-
+async function addUserToDb(user){
+    const userRef = doc(db, "users", user.uid)
+    await setDoc(userRef, {
+        displayName: user.displayName,
+        uid: user.uid
+    })
+}
 function loadUserData(){
     const user = auth.currentUser
     console.log("test")
@@ -246,13 +253,18 @@ async function createOrJoinClass(){
     const userId = auth.currentUser.uid
     classCode = classCodeInputEl.value
     const classRef = doc(db, "classes", classCode)
+    const usersRef = doc(db, "users", userId)
     const classSnap = await getDoc(classRef)
-    if(!classSnap.exists() || classSnap.data().teacher == userId){
+    if(!classSnap.exists()){
         try{
             setDoc(classRef, {
                 code: classCode,
                 teacher: userId,
                 members: arrayUnion(userId)
+            })
+            updateDoc
+            (usersRef, {
+                classes: arrayUnion(classCode)
             })
         }
         catch(err){
@@ -264,7 +276,12 @@ async function createOrJoinClass(){
             updateDoc(classRef, {
                 students: arrayUnion(userId),
                 members: arrayUnion(userId)
+                
             })
+            updateDoc(usersRef, {
+                classes: arrayUnion(classCode)
+            })
+            
         }
         catch(err){
             console.error(err)
@@ -444,6 +461,7 @@ async function fetchAssignments(){
     const q = query(foldersRef, where("class", "==", classCode),where("folderName", "==", currentFolder) )
     onSnapshot(q, (querySnapshot) => {
         querySnapshot.forEach((assignment) =>{
+            console.log(assignment)
             const folderData = assignment.data()
             const folderAssignments = folderData.assignments
             console.log(folderAssignments)
@@ -482,8 +500,10 @@ async function fetchAssignmentContent(){
     const user = auth.currentUser
         const q = query(assignmentRef, and(or(where("recipient","==",user.uid),where("uid","==", user.uid)), where("folder","==", currentFolder), where("class","==", classCode), where("assignment","==", currentAssignment)))
         onSnapshot(q, (querySnapshot) => {
+            
             clearElement(assignmentContentDiv)
             querySnapshot.forEach((message) => {
+                console.log(message.data())
                 renderAssignmentContent(message.data())
             })
             
