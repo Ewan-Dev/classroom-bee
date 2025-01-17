@@ -85,6 +85,7 @@ const settingsBtnEl  = document.getElementById("settings-btn")
 const settingsPfpEl = document.getElementById("settings-pfp-el")
 const settingsDiv = document.getElementById("settings-container")
 
+const structureTypeSpanEl = document.getElementById("type-header")
 
 signUpBtnEl.addEventListener("click", authCreateUserWithEmailAndPassword)
 signInBtnEl.addEventListener("click", authSignInWithEmailAndPassword)
@@ -125,7 +126,7 @@ onAuthStateChanged(auth, (user)=>{
     if(user){
         console.log("logged in")
         hideElement(loggedOutViewEl)
-        showElement(loggedInViewEl)
+        showElementFlex(loggedInViewEl)
         const displayName = user.displayName
         welcomeMessageEl.textContent = `Hello, ${displayName}`
         hideElement(classFolderInputBtnEl)
@@ -191,10 +192,17 @@ function authGoogle(){
 }
 async function addUserToDb(user){
     const userRef = doc(db, "users", user.uid)
-    await setDoc(userRef, {
-        displayName: user.displayName,
-        uid: user.uid
-    })
+    const userSnap = await getDoc(userRef)
+    if(!userSnap.exists()){
+        await setDoc(userRef, {
+            displayName: user.displayName,
+            uid: user.uid
+        })
+    }
+    else{
+        console.log("User is existing member")
+    }
+    
 }
 function loadUserData(){
     const user = auth.currentUser
@@ -250,11 +258,15 @@ else{
 /* FIRESTORE */
 
 async function createOrJoinClass(){
+
     const userId = auth.currentUser.uid
     classCode = classCodeInputEl.value
     const classRef = doc(db, "classes", classCode)
     const usersRef = doc(db, "users", userId)
     const classSnap = await getDoc(classRef)
+    const userSnap = await getDoc(usersRef)
+    const existingClasses = userSnap.exists() ? (userSnap.data().classes || []) : []
+    console.log(existingClasses)
     if(!classSnap.exists()){
         try{
             setDoc(classRef, {
@@ -262,10 +274,12 @@ async function createOrJoinClass(){
                 teacher: userId,
                 members: arrayUnion(userId)
             })
-            updateDoc
-            (usersRef, {
-                classes: arrayUnion(classCode)
-            })
+            setDoc(usersRef, {
+                displayName: auth.currentUser.displayName,
+                uid: userId,
+                classes: [...existingClasses, classCode]
+                
+            },{merge:true})
         }
         catch(err){
             console.error(err)
@@ -273,14 +287,17 @@ async function createOrJoinClass(){
     }
     else{
         try{
-            updateDoc(classRef, {
+            setDoc(classRef, {
                 students: arrayUnion(userId),
                 members: arrayUnion(userId)
                 
-            })
-            updateDoc(usersRef, {
-                classes: arrayUnion(classCode)
-            })
+            },{merge:true})
+            setDoc(usersRef, {
+                displayName: auth.currentUser.displayName,
+                uid: userId,
+                classes: [...existingClasses, classCode]
+                
+            }, {merge:true})
             
         }
         catch(err){
@@ -289,30 +306,52 @@ async function createOrJoinClass(){
 
     }
 }
-
 function fetchClasses(user){
-    const classRef = collection(db, "classes")
-    const q = query(classRef, where("members", "array-contains", user.uid))
-    console.log("hi")
-    onSnapshot(q, (querySnapshot) => {
-        console.log("x")
-        clearElement(classesDivEl)  
-        querySnapshot.forEach(doc => {
-            renderClasses(doc.data())
-        });
+    const usersRef = collection(db, "users")
+    const q = query(usersRef, where("uid", "==", user.uid))
+    onSnapshot(q, (querySnapshot) =>{
+
+        if(querySnapshot){
+            clearElement(classesDivEl) 
+            querySnapshot.forEach((doc)=>{
+                console.log(doc.data())
+                renderClasses(doc.data())
+            })
+            }
+        else{
+            clearElement(classesDivEl) 
+            console.log("no classes")
+        }
+        
     })
 }
+//function fetchClasses(user){
+    //const classRef = collection(db, "classes")
+    //const q = query(classRef, where("members", "array-contains", user.uid))
+    //console.log("hi")
+    //onSnapshot(q, (querySnapshot) => {
+       // console.log("x")
+        //clearElement(classesDivEl)  
+        //querySnapshot.forEach(doc => {
+            //renderClasses(doc.data())
+        //});
+    //})
+//}
 
  function renderClasses(docData){
+    const userClasses = docData.classes
+    structureTypeSpanEl.textContent = "classes"
+    userClasses.forEach((className)=>{
+
     const classButtonEl = document.createElement("button")
     classButtonEl.classList.add("class-el")
-    const className = docData.code
     const classNameEl = document.createElement("h3")
     classNameEl.textContent = className
     classButtonEl.appendChild(classNameEl)
     classButtonEl.setAttribute("id", className)
     classesDivEl.appendChild(classButtonEl)
     detectClassClick()
+})
  }
 
  function clearElement(element){
@@ -385,6 +424,7 @@ async function addFolder(folderName){
  }
  function renderFolders(foldersArray){
     clearElement(foldersDivEl)
+    structureTypeSpanEl.textContent = "folders"
     foldersArray.forEach( folderName =>{
         const folderButtonEl = document.createElement("button")
         const folderNameEl = document.createElement("p")
@@ -472,7 +512,7 @@ async function fetchAssignments(){
 }
 
 function renderPosts(assignmentsArray){
-
+        structureTypeSpanEl.textContent = "assignments"
     assignmentsArray.forEach((assignmentName) => {
         const assignmentButtonEl = document.createElement("button")
         const assignmentNameEl = document.createElement("p")
@@ -495,7 +535,7 @@ function setCurrentAssignment(assignmentButton){
 
 
 async function fetchAssignmentContent(){
-    
+    structureTypeSpanEl.textContent = "posts"
     const assignmentRef = collection(db, "posts")
     const user = auth.currentUser
         const q = query(assignmentRef, and(or(where("recipient","==",user.uid),where("uid","==", user.uid)), where("folder","==", currentFolder), where("class","==", classCode), where("assignment","==", currentAssignment)))
@@ -566,5 +606,8 @@ async function showPostControls(){
  }
  function showElement(element){
     element.style.display = "block"
+ }
+ function showElementFlex(element){
+    element.style.display = "flex"
  }
 
