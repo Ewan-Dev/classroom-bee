@@ -7,7 +7,6 @@ input,
 button{
     --bg-color: 255, 255, 255;
     --primary-color: 0, 0, 0;
-    background-color:rgb(var(--bg-color));
     color:rgb(var(--primary-color));
     font-family: "DM Sans",'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
     border-radius: 0.5em;
@@ -19,15 +18,14 @@ button{
     }
 input,
 button{
+    background-color: rgba(var(--primary-color), 0.03);
+    color: rgb(var(--primary-color));
     border: 0.1rem solid rgba(var(--primary-color),0.1);
     box-sizing: border-box;
 
 }
 input{
     background-color:0.1rem solid rgb(var(--bg-color)) ;
-}
-button{
-    background-color:0.1rem solid rgb(var(--bg-color)); 
 }
 input::placeholder{
     color: rgba(var(--primary-color), 0.5);
@@ -107,6 +105,7 @@ input::placeholder{
     display: flex;
     flex-direction:row;
 }
+
 /* LOGGED IN */
 button.class-el,
 button.folder-el,
@@ -125,7 +124,6 @@ button.assignment-el
     border-right: 0;
     border-radius: 0;
     border: 0.1em solid rgba(var(--primary-color),0.04);
-    background-color: rgba(var(--primary-color), 0.03);
     font-weight: normal;
 
 
@@ -139,6 +137,7 @@ button.assignment-el:last-of-type
     border-radius: 0 0 0.75em 0.75em;
 
 }
+
 #classes-folders-assignments-container{
     display: flex;
     flex-direction: column;
@@ -221,3 +220,7 @@ button.assignment-el:last-of-type
     display: flex;
 }
 
+button.selected-item{
+    background-color: rgba(68, 107, 208, 0.207);
+    color: rgb(var(--primary-color));
+}

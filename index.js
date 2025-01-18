@@ -89,6 +89,10 @@ const structureTypeSpanEl = document.getElementById("type-header")
 
 const classInputLabelEl  = document.getElementById("class-input-label")
 
+const allClassSidebarBtns = document.getElementsByClassName("class-sidebar-btn")
+
+    
+    
 
 signUpBtnEl.addEventListener("click", authCreateUserWithEmailAndPassword)
 signInBtnEl.addEventListener("click", authSignInWithEmailAndPassword)
@@ -195,16 +199,10 @@ function authGoogle(){
 }
 async function addUserToDb(user){
     const userRef = doc(db, "users", user.uid)
-    const userSnap = await getDoc(userRef)
-    if(!userSnap.exists()){
         await setDoc(userRef, {
             displayName: user.displayName,
             uid: user.uid
-        })
-    }
-    else{
-        console.log("User is existing member")
-    }
+        },{merge:true})
     
 }
 function loadUserData(){
@@ -272,17 +270,18 @@ async function createOrJoinClass(){
     console.log(existingClasses)
     if(!classSnap.exists()){
         try{
-            setDoc(classRef, {
-                code: classCode,
-                teacher: userId,
-                members: arrayUnion(userId)
-            })
             setDoc(usersRef, {
                 displayName: auth.currentUser.displayName,
                 uid: userId,
                 classes: [...existingClasses, classCode]
                 
             },{merge:true})
+            setDoc(classRef, {
+                code: classCode,
+                teacher: userId,
+                members: arrayUnion(userId)
+            })
+            
         }
         catch(err){
             console.error(err)
@@ -290,17 +289,18 @@ async function createOrJoinClass(){
     }
     else{
         try{
-            setDoc(classRef, {
-                students: arrayUnion(userId),
-                members: arrayUnion(userId)
-                
-            },{merge:true})
+            
             setDoc(usersRef, {
                 displayName: auth.currentUser.displayName,
                 uid: userId,
                 classes: [...existingClasses, classCode]
                 
             }, {merge:true})
+            setDoc(classRef, {
+                students: arrayUnion(userId),
+                members: arrayUnion(userId)
+                
+            },{merge:true})
             
         }
         catch(err){
@@ -319,12 +319,23 @@ function fetchClasses(user){
                 console.log(doc.data())
                 renderClasses(doc.data())
             })
+            itemClickedStyling()
             }
         else{
             console.log("no classes")
         }
         
     })
+}
+function itemClickedStyling(){
+    for (let button of allClassSidebarBtns){
+        button.addEventListener("click", () => {
+        for(let btn of allClassSidebarBtns){
+            btn.classList.remove("selected-item");
+        }
+        button.classList.add("selected-item")
+        })
+    }
 }
 //function fetchClasses(user){
     //const classRef = collection(db, "classes")
@@ -349,6 +360,7 @@ function fetchClasses(user){
 
     const classButtonEl = document.createElement("button")
     classButtonEl.classList.add("class-el")
+    classButtonEl.classList.add("class-sidebar-btn")
     const classNameEl = document.createElement("p")
     classNameEl.textContent = className
     classButtonEl.appendChild(classNameEl)
@@ -437,17 +449,19 @@ async function addFolder(folderName){
     clearElement(navSidebarEl)
     hideElement(classCodeInputEl)
     hideElement(classCodeButtonEl)
-
+    
     
     foldersArray.forEach( folderName =>{
         const folderButtonEl = document.createElement("button")
         const folderNameEl = document.createElement("p")
         folderButtonEl.classList.add("folder-el")
         folderNameEl.textContent = folderName
+        folderButtonEl.classList.add("class-sidebar-btn")
         folderButtonEl.appendChild(folderNameEl)
         navSidebarEl.appendChild(folderButtonEl)
     })
     setCurrentFolder()
+    itemClickedStyling()
  }
 
 function setCurrentFolder(){
@@ -488,6 +502,7 @@ async function teacherUid(){
         assignments: arrayUnion(assignmentName)
          })
     })
+    itemClickedStyling()
   })
 }
 
@@ -521,22 +536,26 @@ async function fetchAssignments(){
             console.log(folderAssignments)
             renderPosts(folderAssignments)
         })
+        itemClickedStyling()
     })
     
 }
 
 function renderPosts(assignmentsArray){
         structureTypeSpanEl.textContent = "📄 assignments"
-    classInputLabelEl.textContent = "🎓 create an assignment"
+    classInputLabelEl.textContent = "🎓 create assignment"
     clearElement(navSidebarEl)
     hideElement(classFolderInputEl)
     hideElement(classFolderInputBtnEl)
+    showElement(classAssignmentInputBtnEl)
+    showElement(classAssignmentInputEl)
     
     assignmentsArray.forEach((assignmentName) => {
         const assignmentButtonEl = document.createElement("button")
         const assignmentNameEl = document.createElement("p")
         assignmentButtonEl.classList.add("assignment-el")
         assignmentNameEl.textContent = assignmentName
+        assignmentButtonEl.classList.add("class-sidebar-btn")
         assignmentButtonEl.appendChild(assignmentNameEl)
         navSidebarEl.appendChild(assignmentButtonEl)
         setCurrentAssignment(assignmentButtonEl)
@@ -594,6 +613,8 @@ async function showAssignmentControls(){
     if(isTeacher){
     hideElement(classCodeInputEl)
     hideElement(classCodeButtonEl)
+    hideElement(classFolderInputEl)
+    hideElement(classFolderButtonEl)
     showElement(classAssignmentInputBtnEl)
     showElement(classAssignmentInputEl)
     }
