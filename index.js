@@ -56,7 +56,7 @@ const classCodeButtonEl = document.getElementById("class-add-button")
 
 const classFolderInputBtnEl = document.getElementById("class-folder-admin-button")
 const classFolderInputEl = document.getElementById("class-folder-admin-input")
-const classesDivEl = document.getElementById("classes")
+const navSidebarEl = document.getElementById("nav-sidebar")
 const classBtnEls = document.getElementsByClassName("class-el")
 
 let classCode = ""
@@ -86,6 +86,9 @@ const settingsPfpEl = document.getElementById("settings-pfp-el")
 const settingsDiv = document.getElementById("settings-container")
 
 const structureTypeSpanEl = document.getElementById("type-header")
+
+const classInputLabelEl  = document.getElementById("class-input-label")
+
 
 signUpBtnEl.addEventListener("click", authCreateUserWithEmailAndPassword)
 signInBtnEl.addEventListener("click", authSignInWithEmailAndPassword)
@@ -310,16 +313,14 @@ function fetchClasses(user){
     const usersRef = collection(db, "users")
     const q = query(usersRef, where("uid", "==", user.uid))
     onSnapshot(q, (querySnapshot) =>{
-
+        clearElement(navSidebarEl)
         if(querySnapshot){
-            clearElement(classesDivEl) 
             querySnapshot.forEach((doc)=>{
                 console.log(doc.data())
                 renderClasses(doc.data())
             })
             }
         else{
-            clearElement(classesDivEl) 
             console.log("no classes")
         }
         
@@ -340,16 +341,19 @@ function fetchClasses(user){
 
  function renderClasses(docData){
     const userClasses = docData.classes
-    structureTypeSpanEl.textContent = "classes"
+    structureTypeSpanEl.textContent = " 📚 classes"
+    classInputLabelEl.textContent = "🎓 join/create class"
+    clearElement(navSidebarEl)
+    
     userClasses.forEach((className)=>{
 
     const classButtonEl = document.createElement("button")
     classButtonEl.classList.add("class-el")
-    const classNameEl = document.createElement("h3")
+    const classNameEl = document.createElement("p")
     classNameEl.textContent = className
     classButtonEl.appendChild(classNameEl)
     classButtonEl.setAttribute("id", className)
-    classesDivEl.appendChild(classButtonEl)
+    navSidebarEl.appendChild(classButtonEl)
     detectClassClick()
 })
  }
@@ -366,11 +370,15 @@ function fetchClasses(user){
     const teacherStatus = await isTeacher()
     fetchFolders()
     if (teacherStatus){
+        hideElement(classCodeInputEl)
+        hideElement(classCodeButtonEl)
         showElement(classFolderInputBtnEl)
         showElement(classFolderInputEl)
     }
     else{
         console.log("user is not teacher")
+        hideElement(classCodeInputEl)
+        hideElement(classCodeButtonEl)
         hideElement(classFolderInputBtnEl)
         hideElement(classFolderInputEl)
         hideElement(classAssignmentInputBtnEl)
@@ -424,14 +432,20 @@ async function addFolder(folderName){
  }
  function renderFolders(foldersArray){
     clearElement(foldersDivEl)
-    structureTypeSpanEl.textContent = "folders"
+    structureTypeSpanEl.textContent = "📂 folders"
+    classInputLabelEl.textContent = "🎓 create a folder"
+    clearElement(navSidebarEl)
+    hideElement(classCodeInputEl)
+    hideElement(classCodeButtonEl)
+
+    
     foldersArray.forEach( folderName =>{
         const folderButtonEl = document.createElement("button")
         const folderNameEl = document.createElement("p")
         folderButtonEl.classList.add("folder-el")
         folderNameEl.textContent = folderName
         folderButtonEl.appendChild(folderNameEl)
-        foldersDivEl.appendChild(folderButtonEl)
+        navSidebarEl.appendChild(folderButtonEl)
     })
     setCurrentFolder()
  }
@@ -512,14 +526,19 @@ async function fetchAssignments(){
 }
 
 function renderPosts(assignmentsArray){
-        structureTypeSpanEl.textContent = "assignments"
+        structureTypeSpanEl.textContent = "📄 assignments"
+    classInputLabelEl.textContent = "🎓 create an assignment"
+    clearElement(navSidebarEl)
+    hideElement(classFolderInputEl)
+    hideElement(classFolderInputBtnEl)
+    
     assignmentsArray.forEach((assignmentName) => {
         const assignmentButtonEl = document.createElement("button")
         const assignmentNameEl = document.createElement("p")
         assignmentButtonEl.classList.add("assignment-el")
         assignmentNameEl.textContent = assignmentName
         assignmentButtonEl.appendChild(assignmentNameEl)
-        assignmentsDiv.appendChild(assignmentButtonEl)
+        navSidebarEl.appendChild(assignmentButtonEl)
         setCurrentAssignment(assignmentButtonEl)
     })
 }
@@ -535,13 +554,14 @@ function setCurrentAssignment(assignmentButton){
 
 
 async function fetchAssignmentContent(){
-    structureTypeSpanEl.textContent = "posts"
+
+    hideElement(classAssignmentInputEl)
+    hideElement(classAssignmentInputBtnEl)
+
     const assignmentRef = collection(db, "posts")
     const user = auth.currentUser
         const q = query(assignmentRef, and(or(where("recipient","==",user.uid),where("uid","==", user.uid)), where("folder","==", currentFolder), where("class","==", classCode), where("assignment","==", currentAssignment)))
         onSnapshot(q, (querySnapshot) => {
-            
-            clearElement(assignmentContentDiv)
             querySnapshot.forEach((message) => {
                 console.log(message.data())
                 renderAssignmentContent(message.data())
@@ -565,29 +585,46 @@ function renderAssignmentContent(messageData){
 
         messageDiv.appendChild(messageContentEl)
         messageDiv.appendChild(messageSentByEl)
+
         assignmentContentDiv.appendChild(messageDiv)
 }
 
 async function showAssignmentControls(){
     const teacherStatus = await isTeacher()
     if(isTeacher){
+    hideElement(classCodeInputEl)
+    hideElement(classCodeButtonEl)
     showElement(classAssignmentInputBtnEl)
     showElement(classAssignmentInputEl)
     }
     else{
+        hideElement(classCodeInputEl)
+        hideElement(classCodeButtonEl)
+        hideElement(classFolderInputBtnEl)
+        hideElement(classFolderInputEl)
         hideElement(classAssignmentInputBtnEl)
-        hideElement(classAssignmentInputEl) 
+        hideElement(classAssignmentInputEl)
+        hideElement(classPostInputBtnEl)
+        hideElement(classPostInputEl)
     }
 }
 async function showPostControls(){
     const teacherStatus = await isTeacher()
     if(isTeacher){
+    hideElement(classAssignmentInputBtnEl)
+    hideElement(classAssignmentInputEl) 
     showElement(classPostInputBtnEl)
     showElement(classPostInputEl)
     }
     else{
+        hideElement(classCodeInputEl)
+        hideElement(classCodeButtonEl)
+        hideElement(classFolderInputBtnEl)
+        hideElement(classFolderInputEl)
+        hideElement(classAssignmentInputBtnEl)
+        hideElement(classAssignmentInputEl)
         hideElement(classPostInputBtnEl)
-        hideElement(classPostInputEl) 
+        hideElement(classPostInputEl)
     }
 }
 

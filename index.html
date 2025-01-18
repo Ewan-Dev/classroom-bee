@@ -27,13 +27,36 @@
     <section id="logged-in-view">
     <section id="main-section">
         <div id="classes-folders-assignments-container">
+            <span class="header" id="class-input-header"><label for="class-input" id="class-input-label">🎓 join/create class</label></span>
             <div id="classes-join-create">
-                <label for="class-input">📝 join/create class</label>
-                <input id="class-input" placeholder="code">
-                <button id="class-add-button">+</button>
+                <div class="control-inputs">
+
+                <div id="class-code-admin" class="class-admin-container">
+                    <input id="class-input" placeholder="code" class="control-input">
+                    <button id="class-add-button">+</button>
+                </div>
+                
+
+                <div id="class-folder-admin" class="class-admin-container">
+                    <input placeholder="add folder name" id="class-folder-admin-input" class="control-input">
+                    <button id="class-folder-admin-button">+</button>
+                </div>
+
+                <div id="class-assignment-admin" class="class-admin-container">
+                    <input placeholder="add assignment name" id="class-assignment-admin-input" class="control-input">
+                    <button id="class-assignment-admin-button">+</button>
+                </div>
+        
+                <div id="class-post-admin" class="class-admin-container">
+                    <input placeholder="add post text" id="class-post-admin-input" class="control-input">
+                    <button id="class-post-admin-button">+</button>
+                </div>
+                
             </div>
-            <span id="type-header"></span>
-            <div id="classes">
+
+            </div>
+            <span id="type-header" class="header"></span>
+            <div id="nav-sidebar">
             </div>
             <div id="folders">
                 
@@ -41,20 +64,10 @@
             <div id="assignments"></div>
         </div>
         <h1 id="welcome-message"></h1>
-        <div id="class-folder-admin">
-            <input placeholder="add folder name" id="class-folder-admin-input">
-            <button id="class-folder-admin-button">+</button>
-        </div>
-        <div id="class-assignment-admin">
-            <input placeholder="add assignment name" id="class-assignment-admin-input">
-            <button id="class-assignment-admin-button">+</button>
-        </div>
-        <div id="class-post-admin">
-            <input placeholder="add post name" id="class-post-admin-input">
-            <button id="class-post-admin-button">+</button>
-        </div>
         <div id="assignment-content-container"></div>
     </section>
+
+
     <button id="settings-btn">⚙️ settings</button>
     <div id="settings-container">
         <h1>Settings</h1>
@@ -86,3 +99,4 @@
     <script src="./index.js" type="module"></script>
 </body>
 </html>
+

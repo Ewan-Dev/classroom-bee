@@ -9,7 +9,7 @@
 - [x] firebase auth
 - [ ] show error messages to user rather than just console
 - [ ] calendar
-- [ ] add firestore rules
+- [x] add firestore rules
 - [ ] colour-coded folders
 - [ ] class discussion
 - [ ] login page (365)
