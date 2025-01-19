@@ -27,6 +27,21 @@ button{
 input{
     background-color:0.1rem solid rgb(var(--bg-color)) ;
 }
+p.assignment-content-p{
+    margin: 0.1em 0.2em;
+    font-size: 1em;
+    font-weight: normal;
+}
+
+p.message-info{
+    font-size: 0.65em;
+    font-weight: lighter;
+    margin: 0 0.2em;
+}
+
+p.message-info{
+    color: var(--primary-color);
+}
 input::placeholder{
     color: rgba(var(--primary-color), 0.5);
 }
@@ -150,16 +165,19 @@ button.assignment-el:last-of-type
     
 
 }
-.assignment-content-div{
+.message-bubble{
     background-color: rgb(var(--primary-color));
     color:rgb(var(--bg-color));
-    padding: 0.1em;
     margin: 0.4em;
-    border-radius: 0.2em;
+    padding: 0.1em 0;
+    border-radius: 1em ;
+    display: flex;
+    flex-direction: row;
+    width:15em;
 
 }
 .assignment-content-p{
-    margin: 0.1em;
+    margin:0;
 }
 .label-input-container{
     display: block;
@@ -223,4 +241,16 @@ button.assignment-el:last-of-type
 button.selected-item{
     background-color: rgba(68, 107, 208, 0.207);
     color: rgb(var(--primary-color));
+}
+#welcome-message{
+    display: inline-block;
+    width: 100%;
+}
+#assignment-content-container{
+    display: flex;
+    flex-direction: column;
+}
+.message-info{
+    display: flex;
+    flex-direction: row;
 }

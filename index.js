@@ -22,7 +22,8 @@ import { getFirestore,
     getDocs,
     or,
     and,
-    addDoc
+    addDoc,
+    serverTimestamp
  } from 'https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js'
 
 const firebaseConfig = {
@@ -91,6 +92,7 @@ const classInputLabelEl  = document.getElementById("class-input-label")
 
 const allClassSidebarBtns = document.getElementsByClassName("class-sidebar-btn")
 
+const messagesDiv = document.getElementById("messages")
     
     
 
@@ -519,7 +521,8 @@ async function addPost(content){
           isClassDiscussion: false,
           recipient:arrayUnion(teacherId),
           uid: user.uid,
-          userDisplayName: user.displayName
+          userDisplayName: user.displayName,
+          createdAt: serverTimestamp()
       }
       )
 }
@@ -563,8 +566,9 @@ function renderPosts(assignmentsArray){
 }
 
 function setCurrentAssignment(assignmentButton){
-
+    
         assignmentButton.addEventListener("click", function(){
+            clearElement(messagesDiv)
             currentAssignment = assignmentButton.textContent
             fetchAssignmentContent()
             showPostControls()
@@ -580,7 +584,10 @@ async function fetchAssignmentContent(){
     const assignmentRef = collection(db, "posts")
     const user = auth.currentUser
         const q = query(assignmentRef, and(or(where("recipient","==",user.uid),where("uid","==", user.uid)), where("folder","==", currentFolder), where("class","==", classCode), where("assignment","==", currentAssignment)))
+        clearElement(messagesDiv)
         onSnapshot(q, (querySnapshot) => {
+            clearElement(messagesDiv)
+            console.log("1")
             querySnapshot.forEach((message) => {
                 console.log(message.data())
                 renderAssignmentContent(message.data())
@@ -594,18 +601,39 @@ function renderAssignmentContent(messageData){
     const messageDiv = document.createElement("div")
     const messageContentEl = document.createElement("p")
     const messageSentByEl = document.createElement("p")
-
+    const messageCreatedAt = document.createElement("p")
+    const messageInfoDiv = document.createElement("div")
+    const userInfoDiv = document.createElement("div")
+    const messageBox = document.createElement("div")
+    const formattedDate = dateFormatting(messageData.createdAt)
+    
         messageDiv.classList.add("assignment-content-div")
 
         messageContentEl.classList.add("assignment-content-p")
         messageContentEl.textContent = messageData.body
 
         messageSentByEl.textContent = messageData.userDisplayName
+        messageCreatedAt.textContent = formattedDate
 
-        messageDiv.appendChild(messageContentEl)
-        messageDiv.appendChild(messageSentByEl)
+        messageInfoDiv.classList.add("message-info")
 
-        assignmentContentDiv.appendChild(messageDiv)
+        messageSentByEl.classList.add("message-info")
+        messageCreatedAt.classList.add("message-info")
+
+        messageBox.classList.add("message-bubble")
+
+        messageInfoDiv.appendChild(messageCreatedAt)
+        userInfoDiv.appendChild(messageSentByEl)
+
+        messageBox.appendChild(messageContentEl)
+        messageBox.appendChild(messageInfoDiv)
+        
+        messageDiv.appendChild(messageBox)
+
+        messageDiv.appendChild(userInfoDiv)
+
+        messagesDiv.appendChild(messageDiv)
+        
 }
 
 async function showAssignmentControls(){
@@ -649,6 +677,32 @@ async function showPostControls(){
     }
 }
 
+function dateFormatting(firebaseDate){
+    if(!firebaseConfig){
+        return "Date processing"
+    }
+    const todaysDate = new Date()
+
+    const date = firebaseDate.toDate()
+    const day = date.getDate()
+    const year = date.getFullYear()
+    const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct",,"Nov","Dec"]
+    const month = monthNames[date.getMonth()]
+
+    let hours = date.getHours()
+    let minutes = date.getMinutes()
+
+    hours = hours < 10 ? "0" + hours : hours
+    minutes = minutes < 10 ? "0" + minutes : minutes
+
+    if(todaysDate.getFullYear() != year){
+        return `${day} ${month} ${year}`
+    }
+    else{
+        return `${day} ${month} ${hours}:${minutes}`
+    }
+
+}
 
 
 
