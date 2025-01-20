@@ -27,13 +27,13 @@ import { getFirestore,
  } from 'https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js'
 
 const firebaseConfig = {
-    apiKey: "AIzaSyBUkzQncT9mVGtMuL1wrcJQDCXMyzLVqJo",
-    authDomain: "spelling-club-portal.firebaseapp.com",
-    projectId: "spelling-club-portal",
-    storageBucket: "spelling-club-portal.firebasestorage.app",
-    messagingSenderId: "99013335312",
-    appId: "1:99013335312:web:2edf2b69ba37fab769ed95",
-    measurementId: "G-02PJ1652H4"
+    apiKey: "AIzaSyBYQovi1icrOTFbMnFUg4CaNrcVdR5iAbA",
+    authDomain: "classroom-bee.firebaseapp.com",
+    projectId: "classroom-bee",
+    storageBucket: "classroom-bee.firebasestorage.app",
+    messagingSenderId: "995259288468",
+    appId: "1:995259288468:web:4d62af03b01830b7f09d81",
+    measurementId: "G-DW21YQ9SWH"
 }
 const app = initializeApp(firebaseConfig)
 const auth = getAuth(app)
