@@ -513,18 +513,34 @@ async function addPost(content){
     const assignmentRef = collection(db, "posts")
     const teacherId =  await teacherUid()
     console.log(user.displayName)
+    if(teacherId){
       addDoc(assignmentRef, {
           assignment: currentAssignment,
           body: content,
           class: classCode,
           folder: currentFolder,
           isClassDiscussion: false,
-          recipient:arrayUnion(teacherId),
+          teacher: true,
           uid: user.uid,
           userDisplayName: user.displayName,
           createdAt: serverTimestamp()
       }
       )
+    }
+    else{
+        addDoc(assignmentRef, {
+            assignment: currentAssignment,
+            body: content,
+            class: classCode,
+            folder: currentFolder,
+            isClassDiscussion: false,
+            teacher: false,
+            uid: user.uid,
+            userDisplayName: user.displayName,
+            createdAt: serverTimestamp()
+        }
+        ) 
+    }
 }
 
 
@@ -583,7 +599,7 @@ async function fetchAssignmentContent(){
 
     const assignmentRef = collection(db, "posts")
     const user = auth.currentUser
-        const q = query(assignmentRef, and(or(where("recipient","==",user.uid),where("uid","==", user.uid)), where("folder","==", currentFolder), where("class","==", classCode), where("assignment","==", currentAssignment)))
+        const q = query(assignmentRef, and(or(where("teacher","==",true),where("uid","==", user.uid)), where("folder","==", currentFolder), where("class","==", classCode), where("assignment","==", currentAssignment)))
         clearElement(messagesDiv)
         onSnapshot(q, (querySnapshot) => {
             clearElement(messagesDiv)
