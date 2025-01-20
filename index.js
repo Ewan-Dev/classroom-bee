@@ -628,7 +628,7 @@ function renderAssignmentContent(messageData){
         messageContentEl.classList.add("assignment-content-p")
         messageContentEl.textContent = messageData.body
 
-        messageSentByEl.textContent = messageData.userDisplayName
+        messageSentByEl.textContent = messageData.userDisplayName // chnage to fetch uid from users
         messageCreatedAt.textContent = formattedDate
 
         messageInfoDiv.classList.add("message-info")
@@ -638,7 +638,7 @@ function renderAssignmentContent(messageData){
 
         messageBox.classList.add("message-bubble")
 
-        messageInfoDiv.appendChild(messageCreatedAt)
+        
         userInfoDiv.appendChild(messageSentByEl)
 
         messageBox.appendChild(messageContentEl)
@@ -647,7 +647,7 @@ function renderAssignmentContent(messageData){
         messageDiv.appendChild(messageBox)
 
         messageDiv.appendChild(userInfoDiv)
-
+        messageDiv.appendChild(messageCreatedAt)
         messagesDiv.appendChild(messageDiv)
         
 }

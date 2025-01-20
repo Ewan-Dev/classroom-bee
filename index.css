@@ -166,10 +166,10 @@ button.assignment-el:last-of-type
 
 }
 .message-bubble{
-    background-color: rgb(var(--primary-color));
-    color:rgb(var(--bg-color));
+    background-color: rgba(var(--primary-color), 0.075);
+    color:rgba(var(--primary-color));
     margin: 0.4em;
-    padding: 0.1em 0;
+    padding: 0.1em 0.1em;
     border-radius: 1em ;
     display: flex;
     flex-direction: row;
