@@ -93,7 +93,8 @@ const classInputLabelEl  = document.getElementById("class-input-label")
 const allClassSidebarBtns = document.getElementsByClassName("class-sidebar-btn")
 
 const messagesDiv = document.getElementById("messages")
-    
+
+const classAdminDiv = document.getElementById("class-admin-container")
     
 
 signUpBtnEl.addEventListener("click", authCreateUserWithEmailAndPassword)
@@ -128,8 +129,8 @@ settingsBtnEl.addEventListener("click", function(){
 })
 
 displayNameAuthBtnEl.addEventListener("click", updateUserDisplayName)
+pfpAuthBtnEl.addEventListener("click", updateUserPfpUrl)
 
-pfpAuthBtnEl.addEventListener("click", updateUserPfp)
 /* AUTH FUNCTIONS */
 onAuthStateChanged(auth, (user)=>{
     if(user){
@@ -203,7 +204,8 @@ async function addUserToDb(user){
     const userRef = doc(db, "users", user.uid)
         await setDoc(userRef, {
             displayName: user.displayName,
-            uid: user.uid
+            uid: user.uid,
+            photoURL: user.photoURL
         },{merge:true})
     
 }
@@ -242,8 +244,11 @@ else{
 }
 }
 
-function updateUserPfp(){
+
+
+function updateUserPfpUrl(){
     if(pfpAuthInputEl.value){
+        console.log(pfpAuthInputEl.value)
     updateProfile(auth.currentUser, {
         photoURL: pfpAuthInputEl.value
     }).then(()=>{
@@ -254,7 +259,7 @@ function updateUserPfp(){
     })
 }
 else{
-    console.error("please enter your name")
+    console.error("please enter your pfp url")
 }
 }
 
@@ -391,15 +396,7 @@ function itemClickedStyling(){
     }
     else{
         console.log("user is not teacher")
-        hideElement(classCodeInputEl)
-        hideElement(classCodeButtonEl)
-        hideElement(classFolderInputBtnEl)
-        hideElement(classFolderInputEl)
-        hideElement(classAssignmentInputBtnEl)
-        hideElement(classAssignmentInputEl)
-        hideElement(classPostInputBtnEl)
-        hideElement(classPostInputEl)
-    }
+        hideElement(classAdminDiv)}
  }
 
  function detectClassClick(){
@@ -411,11 +408,11 @@ function itemClickedStyling(){
  async function isTeacher(){
     const classRef = doc(db,"classes", classCode)
     const classSnap = await getDoc(classRef)
-    if(classSnap.exists()  && classSnap.data().teacher === auth.currentUser.uid){
+    if(classSnap.exists()  && classSnap.data().teacher == auth.currentUser.uid){
         return true
     }
     else{
-        return false
+        return;
     }
  }
 
@@ -504,7 +501,6 @@ async function teacherUid(){
         assignments: arrayUnion(assignmentName)
          })
     })
-    itemClickedStyling()
   })
 }
 
@@ -564,10 +560,6 @@ function renderPosts(assignmentsArray){
         structureTypeSpanEl.textContent = "📄 assignments"
     classInputLabelEl.textContent = "🎓 create assignment"
     clearElement(navSidebarEl)
-    hideElement(classFolderInputEl)
-    hideElement(classFolderInputBtnEl)
-    showElement(classAssignmentInputBtnEl)
-    showElement(classAssignmentInputEl)
     
     assignmentsArray.forEach((assignmentName) => {
         const assignmentButtonEl = document.createElement("button")
@@ -593,10 +585,7 @@ function setCurrentAssignment(assignmentButton){
 
 
 async function fetchAssignmentContent(){
-
-    hideElement(classAssignmentInputEl)
-    hideElement(classAssignmentInputBtnEl)
-
+    classInputLabelEl.textContent = "🎓 create a post"
     const assignmentRef = collection(db, "posts")
     const user = auth.currentUser
         const q = query(assignmentRef, and(or(where("teacher","==",true),where("uid","==", user.uid)), where("folder","==", currentFolder), where("class","==", classCode), where("assignment","==", currentAssignment)))
@@ -613,7 +602,7 @@ async function fetchAssignmentContent(){
 
 
 }
-function renderAssignmentContent(messageData){
+async function renderAssignmentContent(messageData){
     const messageDiv = document.createElement("div")
     const messageContentEl = document.createElement("p")
     const messageSentByEl = document.createElement("p")
@@ -621,6 +610,9 @@ function renderAssignmentContent(messageData){
     const messageInfoDiv = document.createElement("div")
     const userInfoDiv = document.createElement("div")
     const messageBox = document.createElement("div")
+    const breakEl = document.createElement("p")
+    const userPfpEl = document.createElement("img")
+
     const formattedDate = dateFormatting(messageData.createdAt)
     
         messageDiv.classList.add("assignment-content-div")
@@ -628,69 +620,69 @@ function renderAssignmentContent(messageData){
         messageContentEl.classList.add("assignment-content-p")
         messageContentEl.textContent = messageData.body
 
-        messageSentByEl.textContent = messageData.userDisplayName // chnage to fetch uid from users
+        const displayName = await userDisplayName(messageData.uid)
+
+        messageSentByEl.textContent = displayName// chnage to fetch uid from users
         messageCreatedAt.textContent = formattedDate
+        const pfpUrl = await userPfpUrl(messageData.uid)
+        
+        breakEl.textContent = "•"
+
+        userPfpEl.src = pfpUrl
 
         messageInfoDiv.classList.add("message-info")
-
+        userPfpEl.classList.add("user-pfp-message-info")
         messageSentByEl.classList.add("message-info")
         messageCreatedAt.classList.add("message-info")
 
         messageBox.classList.add("message-bubble")
 
+        userInfoDiv.classList.add("user-info-post-div")
+        
+        breakEl.classList.add("message-info")
+
         
         userInfoDiv.appendChild(messageSentByEl)
+        userInfoDiv.appendChild(breakEl)
+        userInfoDiv.appendChild(messageCreatedAt)
+        
 
+        
         messageBox.appendChild(messageContentEl)
         messageBox.appendChild(messageInfoDiv)
         
         messageDiv.appendChild(messageBox)
 
         messageDiv.appendChild(userInfoDiv)
-        messageDiv.appendChild(messageCreatedAt)
         messagesDiv.appendChild(messageDiv)
         
 }
 
 async function showAssignmentControls(){
     const teacherStatus = await isTeacher()
-    if(isTeacher){
+    if(teacherStatus){
+        console.log("isteacher")
     hideElement(classCodeInputEl)
     hideElement(classCodeButtonEl)
     hideElement(classFolderInputEl)
-    hideElement(classFolderButtonEl)
+    hideElement(classFolderInputBtnEl)
     showElement(classAssignmentInputBtnEl)
     showElement(classAssignmentInputEl)
     }
     else{
         hideElement(classCodeInputEl)
         hideElement(classCodeButtonEl)
-        hideElement(classFolderInputBtnEl)
         hideElement(classFolderInputEl)
+        hideElement(classFolderInputBtnEl)
         hideElement(classAssignmentInputBtnEl)
         hideElement(classAssignmentInputEl)
-        hideElement(classPostInputBtnEl)
-        hideElement(classPostInputEl)
     }
 }
-async function showPostControls(){
-    const teacherStatus = await isTeacher()
-    if(isTeacher){
-    hideElement(classAssignmentInputBtnEl)
-    hideElement(classAssignmentInputEl) 
+function showPostControls(){
     showElement(classPostInputBtnEl)
     showElement(classPostInputEl)
-    }
-    else{
-        hideElement(classCodeInputEl)
-        hideElement(classCodeButtonEl)
-        hideElement(classFolderInputBtnEl)
-        hideElement(classFolderInputEl)
-        hideElement(classAssignmentInputBtnEl)
+    hideElement(classAssignmentInputBtnEl)
         hideElement(classAssignmentInputEl)
-        hideElement(classPostInputBtnEl)
-        hideElement(classPostInputEl)
-    }
 }
 
 function dateFormatting(firebaseDate){
@@ -720,8 +712,21 @@ function dateFormatting(firebaseDate){
 
 }
 
+async function userDisplayName(uid){
+    const docRef = doc(db, "users", uid)
+    const userDoc = await getDoc(docRef)
+    const displayName = userDoc.data().displayName
+    console.log(displayName)
+    return displayName
+}
 
-
+async function userPfpUrl(uid){
+    const docRef = doc(db, "users", uid)
+    const userDoc = await getDoc(docRef)
+    const photoURL = userDoc.data().photoURL
+    console.log(photoURL)
+    return photoURL
+}
 
 
 

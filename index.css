@@ -254,3 +254,9 @@ button.selected-item{
     display: flex;
     flex-direction: row;
 }
+.user-info-post-div{
+    display: flex;
+}
+.user-pfp-message-info{
+    width:1.5em;
+}
