@@ -610,6 +610,7 @@ async function renderAssignmentContent(messageData){
     const messageInfoDiv = document.createElement("div")
     const userInfoDiv = document.createElement("div")
     const messageBox = document.createElement("div")
+    const messageContainer = document.createElement("div")
     const breakEl = document.createElement("p")
     const userPfpEl = document.createElement("img")
 
@@ -631,6 +632,7 @@ async function renderAssignmentContent(messageData){
         userPfpEl.src = pfpUrl
 
         messageInfoDiv.classList.add("message-info")
+        messageContainer.classList.add("message-container")
         userPfpEl.classList.add("user-pfp-message-info")
         messageSentByEl.classList.add("message-info")
         messageCreatedAt.classList.add("message-info")
@@ -640,7 +642,7 @@ async function renderAssignmentContent(messageData){
         userInfoDiv.classList.add("user-info-post-div")
         
         breakEl.classList.add("message-info")
-
+        messagesDiv.classList.add("messages-div")
         
         userInfoDiv.appendChild(messageSentByEl)
         userInfoDiv.appendChild(breakEl)
@@ -649,11 +651,10 @@ async function renderAssignmentContent(messageData){
 
         
         messageBox.appendChild(messageContentEl)
-        messageBox.appendChild(messageInfoDiv)
-        
-        messageDiv.appendChild(messageBox)
-
-        messageDiv.appendChild(userInfoDiv)
+        messageContainer.appendChild(userInfoDiv)
+        messageContainer.appendChild(messageBox)
+        messageDiv.appendChild(userPfpEl)
+        messageDiv.appendChild(messageContainer)
         messagesDiv.appendChild(messageDiv)
         
 }

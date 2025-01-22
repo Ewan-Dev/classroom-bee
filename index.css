@@ -258,5 +258,13 @@ button.selected-item{
     display: flex;
 }
 .user-pfp-message-info{
-    width:1.5em;
+    width:2em;
+    height:2em;
+    border-radius: 50%;
+    
+}
+.assignment-content-div{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
