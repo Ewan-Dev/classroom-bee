@@ -283,7 +283,6 @@ async function createOrJoinClass(){
             setDoc(usersRef, {
                 displayName: auth.currentUser.displayName,
                 uid: userId,
-                classes: [...existingClasses, classCode]
                 
             },{merge:true})
             setDoc(classRef, {
@@ -303,7 +302,6 @@ async function createOrJoinClass(){
             setDoc(usersRef, {
                 displayName: auth.currentUser.displayName,
                 uid: userId,
-                classes: [...existingClasses, classCode]
                 
             }, {merge:true})
             setDoc(classRef, {
@@ -320,15 +318,12 @@ async function createOrJoinClass(){
     }
 }
 function fetchClasses(user){
-    const usersRef = collection(db, "users")
-    const q = query(usersRef, where("uid", "==", user.uid))
+    const classesRef = collection(db, "classes")
+    const q = query(classesRef, where("members", "array-contains", user.uid))
     onSnapshot(q, (querySnapshot) =>{
         clearElement(navSidebarEl)
         if(querySnapshot){
-            querySnapshot.forEach((doc)=>{
-                console.log(doc.data())
-                renderClasses(doc.data())
-            })
+            renderClasses(querySnapshot)
             itemClickedStyling()
             }
         else{
@@ -360,25 +355,25 @@ function itemClickedStyling(){
     //})
 //}
 
- function renderClasses(docData){
-    const userClasses = docData.classes
+ function renderClasses(querySnapshot){
     structureTypeSpanEl.textContent = " 📚 classes"
     classInputLabelEl.textContent = "🎓 join/create class"
     clearElement(navSidebarEl)
+    querySnapshot.forEach((doc)=>{
+        const classDocData = doc.data()
+        const className = classDocData.code
+        const classButtonEl = document.createElement("button")
+        classButtonEl.classList.add("class-el")
+        classButtonEl.classList.add("class-sidebar-btn")
+        const classNameEl = document.createElement("p")
+        classNameEl.textContent = className
+        classButtonEl.appendChild(classNameEl)
+        classButtonEl.setAttribute("id", className)
+        navSidebarEl.appendChild(classButtonEl)
+        detectClassClick()
+    })
     
-    userClasses.forEach((className)=>{
-
-    const classButtonEl = document.createElement("button")
-    classButtonEl.classList.add("class-el")
-    classButtonEl.classList.add("class-sidebar-btn")
-    const classNameEl = document.createElement("p")
-    classNameEl.textContent = className
-    classButtonEl.appendChild(classNameEl)
-    classButtonEl.setAttribute("id", className)
-    navSidebarEl.appendChild(classButtonEl)
-    detectClassClick()
-})
- }
+}
 
  function clearElement(element){
     element.textContent = ""
