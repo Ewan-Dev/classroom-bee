@@ -303,11 +303,11 @@ async function createOrJoinClass(){
                 classes: [...existingClasses, classCode]
                 
             }, {merge:true})
-            setDoc(classRef, {
+            updateDoc(classRef, {
                 students: arrayUnion(userId),
                 members: arrayUnion(userId)
                 
-            },{merge:true})
+            })
             
         }
         catch(err){
@@ -417,12 +417,8 @@ function itemClickedStyling(){
  }
 
 async function addFolder(folderName){
-    const classRef = doc(db, "classes", classCode)
     const folderRef = collection(db, "folders")
     const userId = auth.currentUser.uid
-    updateDoc(classRef, {
-        folders: arrayUnion(folderName)
-    })
     addDoc(folderRef, {
         class: classCode,
         folderName: folderName,
@@ -435,13 +431,19 @@ async function addFolder(folderName){
 }
 
  async function fetchFolders(){
-    const classRef = doc(db, "classes", classCode)
-    const classSnap = await getDoc(classRef)
-    const classData = classSnap.data()
-    const classFolders = classData.folders
-    renderFolders(classFolders)
+    const foldersRef = collection(db, "folders")
+    const q = query(foldersRef, where("class", "==", classCode))
+    onSnapshot(q, (querySnapshot) => {
+        querySnapshot.forEach((doc)=>{
+            const docData = doc.data()
+            const classFolder = docData.folderName
+            renderFolder(classFolder)
+        })
+        
+    })
+    
  }
- function renderFolders(foldersArray){
+ function renderFolder(folderName){
     clearElement(foldersDivEl)
     structureTypeSpanEl.textContent = "📂 folders"
     classInputLabelEl.textContent = "🎓 create a folder"
@@ -449,16 +451,14 @@ async function addFolder(folderName){
     hideElement(classCodeInputEl)
     hideElement(classCodeButtonEl)
     
-    
-    foldersArray.forEach( folderName =>{
-        const folderButtonEl = document.createElement("button")
-        const folderNameEl = document.createElement("p")
-        folderButtonEl.classList.add("folder-el")
-        folderNameEl.textContent = folderName
-        folderButtonEl.classList.add("class-sidebar-btn")
-        folderButtonEl.appendChild(folderNameEl)
-        navSidebarEl.appendChild(folderButtonEl)
-    })
+    const folderButtonEl = document.createElement("button")
+    const folderNameEl = document.createElement("p")
+    folderButtonEl.classList.add("folder-el")
+    folderNameEl.textContent = folderName
+    folderButtonEl.classList.add("class-sidebar-btn")
+    folderButtonEl.appendChild(folderNameEl)
+    navSidebarEl.appendChild(folderButtonEl)
+
     setCurrentFolder()
     itemClickedStyling()
  }
