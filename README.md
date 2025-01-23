@@ -15,6 +15,7 @@
 - [ ] login page (365)
 - [ ] home screen
 - [x] email and password update
+- [ ] efficient reads from db
 <hr>
 <h3>🍔 tech stack</h3>
 <table>

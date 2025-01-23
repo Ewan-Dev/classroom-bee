@@ -1,3 +1,4 @@
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js"
 import {getAnalytics} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-analytics.js"
 import {getAuth,
@@ -274,6 +275,8 @@ async function createOrJoinClass(){
     const classSnap = await getDoc(classRef)
     const userSnap = await getDoc(usersRef)
     const existingClasses = userSnap.exists() ? (userSnap.data().classes || []) : []
+    const existingMembers = classSnap.exists() ? (classSnap.data().members || []) : []
+    const existingStudents = classSnap.exists() ? (classSnap.data().students || []) : []
     console.log(existingClasses)
     if(!classSnap.exists()){
         try{
@@ -286,8 +289,8 @@ async function createOrJoinClass(){
             setDoc(classRef, {
                 code: classCode,
                 teacher: userId,
-                members: arrayUnion(userId)
-            })
+                members: [...existingMembers, auth.currentUser.uid]
+            }, {merge:true})
             
         }
         catch(err){
@@ -303,11 +306,11 @@ async function createOrJoinClass(){
                 classes: [...existingClasses, classCode]
                 
             }, {merge:true})
-            updateDoc(classRef, {
-                students: arrayUnion(userId),
-                members: arrayUnion(userId)
+            setDoc(classRef, {
+                students: [...existingStudents, auth.currentUser.uid],
+                members: [...existingMembers, auth.currentUser.uid]
                 
-            })
+            }, {merge:true})
             
         }
         catch(err){
@@ -744,4 +747,3 @@ async function userPfpUrl(uid){
  function showElementFlex(element){
     element.style.display = "flex"
  }
-
