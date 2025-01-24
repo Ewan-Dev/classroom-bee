@@ -16,6 +16,7 @@
 - [ ] home screen
 - [x] email and password update
 - [ ] efficient reads from db
+- [ ] add text reactions
 <hr>
 <h3>🍔 tech stack</h3>
 <table>
