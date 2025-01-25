@@ -124,7 +124,8 @@ input::placeholder{
 /* LOGGED IN */
 button.class-el,
 button.folder-el,
-button.assignment-el
+button.assignment-el,
+button.user-el
 {
     display: flex;
     justify-content: left;
@@ -145,7 +146,8 @@ button.assignment-el
 }
 button.class-el:last-of-type,
 button.folder-el:last-of-type,
-button.assignment-el:last-of-type
+button.assignment-el:last-of-type,
+button.user-el:last-of-type
 {
     
     border-bottom: 0.1em solid rgba(var(--primary-color), 0.04);
@@ -267,4 +269,11 @@ button.selected-item{
     display: flex;
     flex-direction: row;
     align-items: center;
+}
+.user-img-btn{
+    width:2em;
+    height:2em;
+    border-radius: 50%;
+    margin: 0.5em;
+
 }

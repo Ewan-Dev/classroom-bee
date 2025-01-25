@@ -572,11 +572,7 @@ async function fetchAssignmentContent(){
     const classRef = doc(db, "classes", classCode)
     const classSnap = await getDoc(classRef)
     const classStudents = classSnap.data().students
-    classStudents.forEach((user)=>{
-        console.log(user)
-        fetchUser(user)
-    })
-
+    fetchUsers(classStudents)
     const q = query(assignmentRef, and(or(where("teacher","==",true),where("uid","==", user.uid)), where("folder","==", currentFolder), where("class","==", classCode), where("assignment","==", currentAssignment)))
     onSnapshot(q, (querySnapshot) => {
         clearElement(messagesDiv)
@@ -588,6 +584,14 @@ async function fetchAssignmentContent(){
 
 
 }
+
+function fetchUsers(students){
+    clearElement(navSidebarEl)
+    students.forEach((user)=>{
+        console.log(user)
+        fetchUser(user)
+    })
+    }
 async function renderAssignmentContent(messageData){
     const messageDiv = document.createElement("div")
     const messageContentEl = document.createElement("p")
@@ -710,11 +714,32 @@ async function getUserData(uid){
 
 async function fetchUser(user){
         const userData = await getUserData(user)
-        console.log(userData.displayName1)
+        renderUser(userData)
         console.log(userData.photoURL1)
 
 }
 
+function renderUser(userData){
+    structureTypeSpanEl.textContent = "👥 assignments"
+    classInputLabelEl.textContent = ""
+
+    const userButtonEl = document.createElement("button")
+    const userNameEl = document.createElement("p")
+    const photoURLEl = document.createElement("img")
+
+
+    userButtonEl.classList.add("user-el")
+    userNameEl.textContent = userData.displayName1
+    photoURLEl.src = userData.photoURL1
+
+    userButtonEl.classList.add("class-sidebar-btn")
+    photoURLEl.classList.add("user-img-btn")
+
+    userButtonEl.appendChild(photoURLEl)
+    userButtonEl.appendChild(userNameEl)
+    navSidebarEl.appendChild(userButtonEl)
+    console.log("loaded")
+    }
 
 
 
