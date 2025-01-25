@@ -432,6 +432,7 @@ async function addFolder(folderName){
     const foldersRef = collection(db, "folders")
     const q = query(foldersRef, where("class", "==", classCode))
     onSnapshot(q, (querySnapshot) => {
+        clearElement(navSidebarEl)
         querySnapshot.forEach((doc)=>{
             const docData = doc.data()
             const classFolder = docData.folderName
@@ -442,10 +443,8 @@ async function addFolder(folderName){
     
  }
  function renderFolder(folderName){
-    clearElement(foldersDivEl)
     structureTypeSpanEl.textContent = "📂 folders"
     classInputLabelEl.textContent = "🎓 create a folder"
-    clearElement(navSidebarEl)
     hideElement(classCodeInputEl)
     hideElement(classCodeButtonEl)
     
@@ -484,22 +483,58 @@ async function teacherUid(){
     }
  }
 
+/*code
+"888"
+(string)
 
+
+
+members
+(array)
+
+
+0
+"JgCE42NWhaXbKE7KyPBQFiFyMTB3"
+(string)
+
+
+1
+"JgCE42NWhaXbKE7KyPBQFiFyMTB3"
+(string)
+
+
+
+students
+(array)
+
+
+0
+"JgCE42NWhaXbKE7KyPBQFiFyMTB3"
+(string)
+
+
+teacher
+"JgCE42NWhaXbKE7KyPBQFiFyMTB3"
+*/
  async function addAssignment(assignmentName){
     const user = auth.currentUser
   const folderRef = collection(db, "folders")
-  console.log(345678)
+  try{
   const q = query(folderRef, where("class", "==", classCode), where("folderName", "==", currentFolder))
-  console.log(q)
   onSnapshot(q, (querySnapshot)=>{
     querySnapshot.forEach((folderDoc)=>{
+        console.log("folder doc:")
         console.log(folderDoc.id)
         const folderDocRef = doc(db, "folders", folderDoc.id)
-        updateDoc(folderDocRef, {
+        setDoc(folderDocRef, {
         assignments: arrayUnion(assignmentName)
-         })
+         }, {merge:true})
     })
   })
+}
+catch (error) {
+    console.error("Error adding assignment:", error);
+}
 }
 
 async function addPost(content){
@@ -542,6 +577,7 @@ async function fetchAssignments(){
     const foldersRef = collection(db, "folders")
     const q = query(foldersRef, where("class", "==", classCode),where("folderName", "==", currentFolder) )
     onSnapshot(q, (querySnapshot) => {
+
         querySnapshot.forEach((assignment) =>{
             console.log(assignment)
             const folderData = assignment.data()
@@ -555,10 +591,9 @@ async function fetchAssignments(){
 }
 
 function renderPosts(assignmentsArray){
-        structureTypeSpanEl.textContent = "📄 assignments"
+    structureTypeSpanEl.textContent = "📄 assignments"
     classInputLabelEl.textContent = "🎓 create assignment"
     clearElement(navSidebarEl)
-    
     assignmentsArray.forEach((assignmentName) => {
         const assignmentButtonEl = document.createElement("button")
         const assignmentNameEl = document.createElement("p")
