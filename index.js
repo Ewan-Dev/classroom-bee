@@ -470,39 +470,6 @@ async function teacherUid(){
     }
  }
 
-/*code
-"888"
-(string)
-
-
-
-members
-(array)
-
-
-0
-"JgCE42NWhaXbKE7KyPBQFiFyMTB3"
-(string)
-
-
-1
-"JgCE42NWhaXbKE7KyPBQFiFyMTB3"
-(string)
-
-
-
-students
-(array)
-
-
-0
-"JgCE42NWhaXbKE7KyPBQFiFyMTB3"
-(string)
-
-
-teacher
-"JgCE42NWhaXbKE7KyPBQFiFyMTB3"
-*/
  async function addAssignment(assignmentName){
     const user = auth.currentUser
   const folderRef = collection(db, "folders")
@@ -526,7 +493,6 @@ async function addPost(content){
     const user = auth.currentUser
     const assignmentRef = collection(db, "posts")
     const teacherId =  await teacherUid()
-    console.log(user.displayName)
     if(teacherId){
       addDoc(assignmentRef, {
           assignment: currentAssignment,
@@ -592,7 +558,6 @@ function renderPosts(assignmentsArray){
 function setCurrentAssignment(assignmentButton){
     
         assignmentButton.addEventListener("click", function(){
-            clearElement(messagesDiv)
             currentAssignment = assignmentButton.textContent
             fetchAssignmentContent()
             showPostControls()
@@ -602,18 +567,24 @@ function setCurrentAssignment(assignmentButton){
 
 async function fetchAssignmentContent(){
     classInputLabelEl.textContent = "🎓 create a post"
-    const assignmentRef = collection(db, "posts")
     const user = auth.currentUser
-        const q = query(assignmentRef, and(or(where("teacher","==",true),where("uid","==", user.uid)), where("folder","==", currentFolder), where("class","==", classCode), where("assignment","==", currentAssignment)))
+    const assignmentRef = collection(db, "posts")
+    const classRef = doc(db, "classes", classCode)
+    const classSnap = await getDoc(classRef)
+    const classStudents = classSnap.data().students
+    classStudents.forEach((user)=>{
+        console.log(user)
+        fetchUser(user)
+    })
+
+    const q = query(assignmentRef, and(or(where("teacher","==",true),where("uid","==", user.uid)), where("folder","==", currentFolder), where("class","==", classCode), where("assignment","==", currentAssignment)))
+    onSnapshot(q, (querySnapshot) => {
         clearElement(messagesDiv)
-        onSnapshot(q, (querySnapshot) => {
-            clearElement(messagesDiv)
-            console.log("1")
-            querySnapshot.forEach((message) => {
-                renderAssignmentContent(message.data())
-            })
+        querySnapshot.forEach((message) => {
+            renderAssignmentContent(message.data())
+    })
             
-        })
+    })
 
 
 }
@@ -635,12 +606,12 @@ async function renderAssignmentContent(messageData){
 
         messageContentEl.classList.add("assignment-content-p")
         messageContentEl.textContent = messageData.body
-
-        const displayName = await userDisplayName(messageData.uid)
-
-        messageSentByEl.textContent = displayName// chnage to fetch uid from users
+        const userData = await getUserData(auth.currentUser.uid)
+        const displayName = userData.displayName1
+        const pfpUrl = userData.photoURL1
+        messageSentByEl.textContent = displayName
         messageCreatedAt.textContent = formattedDate
-        const pfpUrl = await userPfpUrl(messageData.uid)
+        
         
         breakEl.textContent = "•"
 
@@ -727,22 +698,22 @@ function dateFormatting(firebaseDate){
 
 }
 
-async function userDisplayName(uid){
+async function getUserData(uid){
     const docRef = doc(db, "users", uid)
     const userDoc = await getDoc(docRef)
     const displayName = userDoc.data().displayName
-    console.log(displayName)
-    return displayName
-}
-
-async function userPfpUrl(uid){
-    const docRef = doc(db, "users", uid)
-    const userDoc = await getDoc(docRef)
     const photoURL = userDoc.data().photoURL
-    console.log(photoURL)
-    return photoURL
+    return {displayName1: displayName,
+        photoURL1: photoURL} 
+            
 }
 
+async function fetchUser(user){
+        const userData = await getUserData(user)
+        console.log(userData.displayName1)
+        console.log(userData.photoURL1)
+
+}
 
 
 
