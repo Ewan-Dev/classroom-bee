@@ -212,7 +212,6 @@ async function addUserToDb(user){
 }
 function loadUserData(){
     const user = auth.currentUser
-    console.log("test")
     if (user.displayName){
         displayNameAuthInputEl.textContent = user.displayName
         
@@ -277,7 +276,6 @@ async function createOrJoinClass(){
     const existingClasses = userSnap.exists() ? (userSnap.data().classes || []) : []
     const existingMembers = classSnap.exists() ? (classSnap.data().members || []) : []
     const existingStudents = classSnap.exists() ? (classSnap.data().students || []) : []
-    console.log(existingClasses)
     if(!classSnap.exists()){
         try{
             setDoc(usersRef, {
@@ -342,18 +340,7 @@ function itemClickedStyling(){
         })
     }
 }
-//function fetchClasses(user){
-    //const classRef = collection(db, "classes")
-    //const q = query(classRef, where("members", "array-contains", user.uid))
-    //console.log("hi")
-    //onSnapshot(q, (querySnapshot) => {
-       // console.log("x")
-        //clearElement(classesDivEl)  
-        //querySnapshot.forEach(doc => {
-            //renderClasses(doc.data())
-        //});
-    //})
-//}
+
 
  function renderClasses(querySnapshot){
     structureTypeSpanEl.textContent = " 📚 classes"
@@ -523,12 +510,10 @@ teacher
   const q = query(folderRef, where("class", "==", classCode), where("folderName", "==", currentFolder))
   onSnapshot(q, (querySnapshot)=>{
     querySnapshot.forEach((folderDoc)=>{
-        console.log("folder doc:")
-        console.log(folderDoc.id)
         const folderDocRef = doc(db, "folders", folderDoc.id)
-        setDoc(folderDocRef, {
+        updateDoc(folderDocRef, {
         assignments: arrayUnion(assignmentName)
-         }, {merge:true})
+         })
     })
   })
 }
@@ -579,10 +564,8 @@ async function fetchAssignments(){
     onSnapshot(q, (querySnapshot) => {
 
         querySnapshot.forEach((assignment) =>{
-            console.log(assignment)
             const folderData = assignment.data()
             const folderAssignments = folderData.assignments
-            console.log(folderAssignments)
             renderPosts(folderAssignments)
         })
         itemClickedStyling()
@@ -627,7 +610,6 @@ async function fetchAssignmentContent(){
             clearElement(messagesDiv)
             console.log("1")
             querySnapshot.forEach((message) => {
-                console.log(message.data())
                 renderAssignmentContent(message.data())
             })
             
@@ -695,7 +677,6 @@ async function renderAssignmentContent(messageData){
 async function showAssignmentControls(){
     const teacherStatus = await isTeacher()
     if(teacherStatus){
-        console.log("isteacher")
     hideElement(classCodeInputEl)
     hideElement(classCodeButtonEl)
     hideElement(classFolderInputEl)
