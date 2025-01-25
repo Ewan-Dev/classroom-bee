@@ -641,8 +641,8 @@ async function renderAssignmentContent(messageData){
 
         
         messageBox.appendChild(messageContentEl)
-        messageContainer.appendChild(userInfoDiv)
         messageContainer.appendChild(messageBox)
+        messageContainer.appendChild(userInfoDiv)
         messageDiv.appendChild(userPfpEl)
         messageDiv.appendChild(messageContainer)
         messagesDiv.appendChild(messageDiv)
