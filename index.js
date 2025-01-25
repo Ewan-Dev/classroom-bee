@@ -606,7 +606,7 @@ async function renderAssignmentContent(messageData){
 
         messageContentEl.classList.add("assignment-content-p")
         messageContentEl.textContent = messageData.body
-        const userData = await getUserData(auth.currentUser.uid)
+        const userData = await getUserData(messageData.uid)
         const displayName = userData.displayName1
         const pfpUrl = userData.photoURL1
         messageSentByEl.textContent = displayName
