@@ -542,6 +542,7 @@ async function fetchAssignments(){
 function renderPosts(assignmentsArray){
     structureTypeSpanEl.textContent = "📄 assignments"
     classInputLabelEl.textContent = "🎓 create assignment"
+    if(assignmentsArray){
     clearElement(navSidebarEl)
     assignmentsArray.forEach((assignmentName) => {
         const assignmentButtonEl = document.createElement("button")
@@ -553,6 +554,10 @@ function renderPosts(assignmentsArray){
         navSidebarEl.appendChild(assignmentButtonEl)
         setCurrentAssignment(assignmentButtonEl)
     })
+}
+else{
+    return
+}
 }
 
 function setCurrentAssignment(assignmentButton){
@@ -586,12 +591,14 @@ async function fetchAssignmentContent(){
 }
 
 function fetchUsers(students){
+    if(students){
     clearElement(navSidebarEl)
     students.forEach((user)=>{
         console.log(user)
         fetchUser(user)
     })
     }
+}
 async function renderAssignmentContent(messageData){
     const messageDiv = document.createElement("div")
     const messageContentEl = document.createElement("p")
@@ -672,7 +679,7 @@ function showPostControls(){
     showElement(classPostInputBtnEl)
     showElement(classPostInputEl)
     hideElement(classAssignmentInputBtnEl)
-        hideElement(classAssignmentInputEl)
+    hideElement(classAssignmentInputEl)
 }
 
 function dateFormatting(firebaseDate){
@@ -707,8 +714,14 @@ async function getUserData(uid){
     const userDoc = await getDoc(docRef)
     const displayName = userDoc.data().displayName
     const photoURL = userDoc.data().photoURL
+    if(photoURL && displayName)
+    {
     return {displayName1: displayName,
         photoURL1: photoURL} 
+    }
+    else{
+        return
+    }
             
 }
 
