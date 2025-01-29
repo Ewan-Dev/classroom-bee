@@ -8,7 +8,7 @@
 </head>
 <body>
     <section id="logged-out-view">
-        <div id="login">
+        <div id="login" class="window">
             <header class="window-header"><b>🔐 Login & Signup</b></header>
             <div id="inputs-auth">
             <input placeholder=" 📧 email" id="email" type="email" class="input-auth">
@@ -26,33 +26,33 @@
 
     <section id="logged-in-view">
     <section id="main-section">
-        <div id="classes-folders-assignments-container">
-            <span class="header" id="class-input-header"><label for="class-input" id="class-input-label">🎓 join/create class</label></span>
-            <div id="classes-join-create">
-                <div class="control-inputs">
-
-                <div id="class-code-admin" class="class-admin-container">
-                    <input id="class-input" placeholder="code" class="control-input">
-                    <button id="class-add-button">+</button>
+        <div id="dialog-container">
+            <dialog id="class-admin" class="window class-controls-dialog">
+                <span class="header" id="class-input-header"><label for="class-input" id="class-input-label">🎓 join/create class</label></span>
+                <input id="class-input" placeholder="code" class="control-input">
+                <div class="class-controls-inputs-container">
+                <button id="class-add-button" class="control-button">join or create class</button>
+                <button id="close-class-control-button" class="close-control-button">close</button>
                 </div>
-                
-
-                <div id="class-folder-admin" class="class-admin-container">
+              </dialog>
+        </div>
+        <div id="classes-folders-assignments-container">
+                <div class="control-inputs">   
+                <div id="class-folder-admin" class="class-admin-container class-conrols-dialog">
                     <input placeholder="add folder name" id="class-folder-admin-input" class="control-input">
                     <button id="class-folder-admin-button">+</button>
                 </div>
 
-                <div id="class-assignment-admin" class="class-admin-container">
+                <div id="class-assignment-admin" class="class-admin-container class-controls-dialog">
                     <input placeholder="add assignment name" id="class-assignment-admin-input" class="control-input">
                     <button id="class-assignment-admin-button">+</button>
                 </div>
         
-                <div id="class-post-admin" class="class-admin-container">
+                <div id="class-post-admin" class="class-admin-container class-controls-dialog">
                     <input placeholder="add post text" id="class-post-admin-input" class="control-input">
                     <button id="class-post-admin-button">+</button>
                 </div>
                 
-            </div>
 
             </div>
             <span id="type-header" class="header"></span>
@@ -67,10 +67,10 @@
         
         <div id="assignment-content-container">
             <h1 id="welcome-message"></h1>
+            
             <div id="messages"></div>
         </div>
     </section>
-
 
     <button id="settings-btn">⚙️ settings</button>
     <div id="settings-container">
@@ -99,6 +99,11 @@
                 <label for="auth-email-input-el">new email</label>
                 <input id="auth-email-input-el">
             </div>
+
+            <dialog>
+                <button>submit</button>
+                <p>This modal dialog has a groovy backdrop!</p>
+              </dialog>
     </div>
     <script src="./index.js" type="module"></script>
 </body>

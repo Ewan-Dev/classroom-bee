@@ -96,13 +96,19 @@ const allClassSidebarBtns = document.getElementsByClassName("class-sidebar-btn")
 const messagesDiv = document.getElementById("messages")
 
 const classAdminDiv = document.getElementById("class-admin-container")
-    
+const classAdminDialog = document.getElementById("class-admin")
+
+const classCodeAdminCloseBtn = document.getElementById("close-class-control-button")
 
 signUpBtnEl.addEventListener("click", authCreateUserWithEmailAndPassword)
 signInBtnEl.addEventListener("click", authSignInWithEmailAndPassword)
 signInWithGoogleButton.addEventListener("click", authGoogle)
 
 classCodeButtonEl.addEventListener("click", createOrJoinClass)
+classCodeAdminCloseBtn.addEventListener("click", function(){
+    classAdminDialog.close()
+    console.log("1")
+})
 classFolderInputBtnEl.addEventListener("click", function(){
     const classFolderInputElValue = classFolderInputEl.value
     console.log(classFolderInputElValue)
@@ -147,7 +153,8 @@ onAuthStateChanged(auth, (user)=>{
         hideElement(classPostInputBtnEl)
         hideElement(classPostInputEl)
         hideElement(settingsDiv)
-        addUserToDb(user);
+        addUserToDb(user)
+        classAdminDialog.showModal()
         fetchClasses(user)
     }
     else{
