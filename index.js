@@ -380,7 +380,7 @@ function itemClickedStyling(){
 }
 
  function clearElement(element){
-    element.textContent = ""
+    element.innerHTML = ""
 
  }
  
@@ -601,9 +601,9 @@ async function fetchAssignmentContent(){
     const classStudents = classSnap.data().students
     fetchUsers(classStudents)
     const q = query(assignmentRef, and(or(where("teacher","==",true),where("uid","==", user.uid)), where("folder","==", currentFolder), where("class","==", classCode), where("assignment","==", currentAssignment)))
-    onSnapshot(q, (querySnapshot) => {
-        clearElement(messagesDiv)
+    onSnapshot(q, (querySnapshot) => {  
         querySnapshot.forEach((message) => {
+            clearElement(messagesDiv)
             renderAssignmentContent(message.data())
     })
             
