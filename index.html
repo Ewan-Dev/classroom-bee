@@ -29,23 +29,30 @@
         <div id="dialog-container">
             <dialog id="class-admin" class="window class-controls-dialog">
                 <span class="header" id="class-input-header"><label for="class-input" id="class-input-label">🎓 join/create class</label></span>
+                
                 <input id="class-input" placeholder="code" class="control-input">
+
+                <input placeholder="add folder name" id="class-folder-admin-input" class="control-input">
+
+                <input placeholder="add assignment name" id="class-assignment-admin-input" class="control-input">
+               
                 <div class="class-controls-inputs-container">
                 <button id="class-add-button" class="control-button">join or create class</button>
+                <button id="class-folder-admin-button" class="control-button">create folder</button>
+                <button id="class-assignment-admin-button" class="control-button">create assignment</button>
                 <button id="close-class-control-button" class="close-control-button">close</button>
                 </div>
+
               </dialog>
         </div>
         <div id="classes-folders-assignments-container">
                 <div class="control-inputs">   
                 <div id="class-folder-admin" class="class-admin-container class-conrols-dialog">
-                    <input placeholder="add folder name" id="class-folder-admin-input" class="control-input">
-                    <button id="class-folder-admin-button">+</button>
+                    
                 </div>
 
                 <div id="class-assignment-admin" class="class-admin-container class-controls-dialog">
-                    <input placeholder="add assignment name" id="class-assignment-admin-input" class="control-input">
-                    <button id="class-assignment-admin-button">+</button>
+                   
                 </div>
         
                 <div id="class-post-admin" class="class-admin-container class-controls-dialog">
@@ -55,7 +62,10 @@
                 
 
             </div>
-            <span id="type-header" class="header"></span>
+            <span id="type-header" class="header">
+                <p id="type-header-label"></p>
+                <button id="class-admin-button">+</button>
+            </span>
             <div id="nav-sidebar">
             </div>
             <div id="folders">

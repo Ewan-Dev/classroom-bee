@@ -87,7 +87,7 @@ const settingsBtnEl  = document.getElementById("settings-btn")
 const settingsPfpEl = document.getElementById("settings-pfp-el")
 const settingsDiv = document.getElementById("settings-container")
 
-const structureTypeSpanEl = document.getElementById("type-header")
+const structureTypeSpanEl = document.getElementById("type-header-label")
 
 const classInputLabelEl  = document.getElementById("class-input-label")
 
@@ -100,20 +100,26 @@ const classAdminDialog = document.getElementById("class-admin")
 
 const classCodeAdminCloseBtn = document.getElementById("close-class-control-button")
 
+const classAdminBtn = document.getElementById("class-admin-button")
+
+const createClassAdminBtns = document.getElementsByClassName("control-button")
+classCodeButtonEl.addEventListener("click", createOrJoinClass)
 signUpBtnEl.addEventListener("click", authCreateUserWithEmailAndPassword)
 signInBtnEl.addEventListener("click", authSignInWithEmailAndPassword)
 signInWithGoogleButton.addEventListener("click", authGoogle)
-
-classCodeButtonEl.addEventListener("click", createOrJoinClass)
-classCodeAdminCloseBtn.addEventListener("click", function(){
-    classAdminDialog.close()
-    console.log("1")
+classAdminBtn.addEventListener("click", function(){
+    classAdminDialog.showModal()
 })
+
 classFolderInputBtnEl.addEventListener("click", function(){
     const classFolderInputElValue = classFolderInputEl.value
     console.log(classFolderInputElValue)
     addFolder(classFolderInputElValue)
 } )
+
+classCodeAdminCloseBtn.addEventListener("click", function(){
+    classAdminDialog.close()
+})
 
 classAssignmentInputBtnEl.addEventListener("click", function(){
     const classAssignmentInputElValue = classAssignmentInputEl.value
@@ -138,6 +144,11 @@ settingsBtnEl.addEventListener("click", function(){
 displayNameAuthBtnEl.addEventListener("click", updateUserDisplayName)
 pfpAuthBtnEl.addEventListener("click", updateUserPfpUrl)
 
+for (let createClassAdminBtn of createClassAdminBtns){
+    createClassAdminBtn.addEventListener("click", function(){
+        classAdminDialog.close()
+    })
+}
 /* AUTH FUNCTIONS */
 onAuthStateChanged(auth, (user)=>{
     if(user){
@@ -154,7 +165,6 @@ onAuthStateChanged(auth, (user)=>{
         hideElement(classPostInputEl)
         hideElement(settingsDiv)
         addUserToDb(user)
-        classAdminDialog.showModal()
         fetchClasses(user)
     }
     else{
@@ -273,7 +283,6 @@ else{
 /* FIRESTORE */
 
 async function createOrJoinClass(){
-
     const userId = auth.currentUser.uid
     classCode = classCodeInputEl.value
     const classRef = doc(db, "classes", classCode)
@@ -283,6 +292,7 @@ async function createOrJoinClass(){
     const existingClasses = userSnap.exists() ? (userSnap.data().classes || []) : []
     const existingMembers = classSnap.exists() ? (classSnap.data().members || []) : []
     const existingStudents = classSnap.exists() ? (classSnap.data().students || []) : []
+    classAdminDialog.close()
     if(!classSnap.exists()){
         try{
             setDoc(usersRef, {
@@ -375,21 +385,28 @@ function itemClickedStyling(){
  }
  
  async function setCurrentClass(event){
+
     classCode = event.currentTarget.id 
-    const classBtnEl = document.getElementById(classCode)
     console.log(`current class: ${classCode}`)
-    const teacherStatus = await isTeacher()
+    const teacherStatus = await isTeacher(classCode)
+    structureTypeSpanEl.textContent = "📂 folders"
+    classInputLabelEl.textContent = "🎓 create a folder"
+
     fetchFolders()
-    if (teacherStatus){
-        hideElement(classCodeInputEl)
-        hideElement(classCodeButtonEl)
-        showElement(classFolderInputBtnEl)
-        showElement(classFolderInputEl)
+ 
+    hideElement(classCodeInputEl)
+    hideElement(classCodeButtonEl)
+    showElement(classFolderInputBtnEl)
+    showElement(classFolderInputEl)
+
+    if(teacherStatus){
+        showElement(classAdminBtn)
     }
     else{
-        console.log("user is not teacher")
-        hideElement(classAdminDiv)}
- }
+        hideElement(classAdminBtn)
+    }
+    }
+ 
 
  function detectClassClick(){
     for(let classBtnEl of classBtnEls){
@@ -397,7 +414,7 @@ function itemClickedStyling(){
     }
  }
 
- async function isTeacher(){
+ async function isTeacher(classCode){
     const classRef = doc(db,"classes", classCode)
     const classSnap = await getDoc(classRef)
     if(classSnap.exists()  && classSnap.data().teacher == auth.currentUser.uid){
@@ -437,11 +454,6 @@ async function addFolder(folderName){
     
  }
  function renderFolder(folderName){
-    structureTypeSpanEl.textContent = "📂 folders"
-    classInputLabelEl.textContent = "🎓 create a folder"
-    hideElement(classCodeInputEl)
-    hideElement(classCodeButtonEl)
-    
     const folderButtonEl = document.createElement("button")
     const folderNameEl = document.createElement("p")
     folderButtonEl.classList.add("folder-el")
@@ -458,8 +470,9 @@ function setCurrentFolder(){
     for(let folderBtn of folderBtnEls){
         folderBtn.addEventListener("click", function(){
             currentFolder = folderBtn.textContent
-            showAssignmentControls()
+ 
             fetchAssignments()
+            showAssignmentControls()
         })
     }
 }
@@ -532,10 +545,14 @@ async function addPost(content){
 
 
 async function fetchAssignments(){
+        structureTypeSpanEl.textContent = "📄 assignments"
+    classInputLabelEl.textContent = "🎓 create assignment"
+
+
     const foldersRef = collection(db, "folders")
     const q = query(foldersRef, where("class", "==", classCode),where("folderName", "==", currentFolder) )
     onSnapshot(q, (querySnapshot) => {
-
+        clearElement(navSidebarEl)
         querySnapshot.forEach((assignment) =>{
             const folderData = assignment.data()
             const folderAssignments = folderData.assignments
@@ -547,8 +564,6 @@ async function fetchAssignments(){
 }
 
 function renderPosts(assignmentsArray){
-    structureTypeSpanEl.textContent = "📄 assignments"
-    classInputLabelEl.textContent = "🎓 create assignment"
     if(assignmentsArray){
     clearElement(navSidebarEl)
     assignmentsArray.forEach((assignmentName) => {
@@ -664,23 +679,10 @@ async function renderAssignmentContent(messageData){
 }
 
 async function showAssignmentControls(){
-    const teacherStatus = await isTeacher()
-    if(teacherStatus){
-    hideElement(classCodeInputEl)
-    hideElement(classCodeButtonEl)
     hideElement(classFolderInputEl)
     hideElement(classFolderInputBtnEl)
     showElement(classAssignmentInputBtnEl)
     showElement(classAssignmentInputEl)
-    }
-    else{
-        hideElement(classCodeInputEl)
-        hideElement(classCodeButtonEl)
-        hideElement(classFolderInputEl)
-        hideElement(classFolderInputBtnEl)
-        hideElement(classAssignmentInputBtnEl)
-        hideElement(classAssignmentInputEl)
-    }
 }
 function showPostControls(){
     showElement(classPostInputBtnEl)
@@ -721,6 +723,8 @@ async function getUserData(uid){
     const userDoc = await getDoc(docRef)
     const displayName = userDoc.data().displayName
     const photoURL = userDoc.data().photoURL
+    console.log("pppp")
+    console.log(displayName)
     if(photoURL && displayName)
     {
     return {displayName1: displayName,
@@ -740,7 +744,7 @@ async function fetchUser(user){
 }
 
 function renderUser(userData){
-    structureTypeSpanEl.textContent = "👥 assignments"
+    structureTypeSpanEl.textContent = "👥 users"
     classInputLabelEl.textContent = ""
 
     const userButtonEl = document.createElement("button")
