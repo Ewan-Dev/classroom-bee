@@ -101,7 +101,7 @@ const classAdminDialog = document.getElementById("class-admin")
 const classCodeAdminCloseBtn = document.getElementById("close-class-control-button")
 
 const classAdminBtn = document.getElementById("class-admin-button")
-
+const classInputHeaderIcon = document.getElementById("class-input-header-icon")
 const createClassAdminBtns = document.getElementsByClassName("control-button")
 classCodeButtonEl.addEventListener("click", createOrJoinClass)
 signUpBtnEl.addEventListener("click", authCreateUserWithEmailAndPassword)
@@ -389,10 +389,8 @@ function itemClickedStyling(){
     classCode = event.currentTarget.id 
     console.log(`current class: ${classCode}`)
     const teacherStatus = await isTeacher(classCode)
-    structureTypeSpanEl.textContent = "📂 folders"
     classInputLabelEl.textContent = "🎓 create a folder"
 
-    fetchFolders()
  
     hideElement(classCodeInputEl)
     hideElement(classCodeButtonEl)

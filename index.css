@@ -188,7 +188,7 @@ button.user-el:last-of-type
     width: 11.5em;
     height: 100vh;
     padding: 0.75em;
-    margin-right: 1em;
+    margin:0;
     
 
 }
@@ -239,7 +239,9 @@ button.user-el:last-of-type
 #main-section{
         display: flex;
         flex-direction:row;
+        width: 100%;
     }
+    
 .header{
     box-sizing: border-box;
     display: flex;
@@ -302,6 +304,7 @@ button.selected-item{
 #assignment-content-container{
     display: flex;
     flex-direction: column;
+    width: 100%;
 }
 .message-info{
     display: flex;
@@ -345,3 +348,45 @@ button.selected-item{
     font-weight: bold;
     color: rgba(var(--primary-color)) ;
 }
+#class-post-admin-input{
+    width: 14em;
+    height: 2em;
+    font-size: 1em;
+    background-color: rgb(var(--bg-color));
+    margin: 0.25em;
+}
+#class-post-admin-div{
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    background-color: rgba(var(--primary-color),0.05);
+    width: 100%;
+}
+#class-post-admin-button{
+    height: 1.33em;
+    width: 1.33em;
+    border-radius: 0.25em;
+    padding: 0.1em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.material-symbols-outlined {
+    color: rgba(var(--primary-color),0.75);
+    margin: 0;
+    font-size: 15px !important;
+
+  }
+  #type-header-label{
+    display: flex;
+    align-items: center;
+    height: 1.5em;
+  }
+  #class-input-header-icon{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 1.5em;
+    margin: 0.2em;
+  }
