@@ -372,21 +372,34 @@ button.selected-item{
     align-items: center;
 }
 
-.material-symbols-outlined {
-    color: rgba(var(--primary-color),0.75);
+.material-symbols-rounded {
+    color: rgb(var(--primary-color));
     margin: 0;
     font-size: 15px !important;
 
   }
   #type-header-label{
     display: flex;
-    align-items: center;
     height: 1.5em;
+    margin: 0;
   }
   #class-input-header-icon{
     display: flex;
     align-items: center;
-    justify-content: center;
     height: 1.5em;
     margin: 0.2em;
+  }
+  #type-label-icon-container{
+    width: 7em;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+  }
+  #type-span-structure-icon{
+    width: 16px;
+    margin: 0;
+    margin: 0.2em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }

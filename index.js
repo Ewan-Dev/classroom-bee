@@ -103,6 +103,8 @@ const classCodeAdminCloseBtn = document.getElementById("close-class-control-butt
 const classAdminBtn = document.getElementById("class-admin-button")
 const classInputHeaderIcon = document.getElementById("class-input-header-icon")
 const createClassAdminBtns = document.getElementsByClassName("control-button")
+const typeSpanStructureIcon =document.getElementById("type-span-structure-icon")
+
 classCodeButtonEl.addEventListener("click", createOrJoinClass)
 signUpBtnEl.addEventListener("click", authCreateUserWithEmailAndPassword)
 signInBtnEl.addEventListener("click", authSignInWithEmailAndPassword)
@@ -360,9 +362,21 @@ function itemClickedStyling(){
 
 
  function renderClasses(querySnapshot){
-    structureTypeSpanEl.textContent = " 📚 classes"
-    classInputLabelEl.textContent = "🎓 join/create class"
+    const materialIconType = document.createElement("span")
+    const materialIconInput = document.createElement("span")
+
+    classInputLabelEl.textContent = "join/create class"
+    structureTypeSpanEl.textContent = "classes"    
+    clearElement(classInputHeaderIcon)
+    clearElement(typeSpanStructureIcon)
+    materialIconInput.textContent = "school"
+    materialIconType.textContent = "school"
+    materialIconInput.classList.add("material-symbols-rounded")
+    materialIconType.classList.add("material-symbols-rounded")
+    typeSpanStructureIcon.appendChild(materialIconType)
+    classInputHeaderIcon.appendChild(materialIconInput)
     clearElement(navSidebarEl)
+
     querySnapshot.forEach((doc)=>{
         const classDocData = doc.data()
         const className = classDocData.code
@@ -389,8 +403,24 @@ function itemClickedStyling(){
     classCode = event.currentTarget.id 
     console.log(`current class: ${classCode}`)
     const teacherStatus = await isTeacher(classCode)
-    classInputLabelEl.textContent = "🎓 create a folder"
+    classInputLabelEl.textContent = "create a folder"
+    structureTypeSpanEl.textContent = "folders"
 
+
+    const materialIconInput = document.createElement("span")
+    clearElement(classInputHeaderIcon)
+    materialIconInput.textContent = "folder_open"
+    materialIconInput.classList.add("material-symbols-rounded")
+    classInputHeaderIcon.appendChild(materialIconInput)
+
+    const materialIconType = document.createElement("span")
+    clearElement(typeSpanStructureIcon)
+    materialIconType.textContent = "folder_open"
+    materialIconType.classList.add("material-symbols-rounded")
+    typeSpanStructureIcon.appendChild(materialIconType)
+
+
+    fetchFolders()
  
     hideElement(classCodeInputEl)
     hideElement(classCodeButtonEl)
@@ -543,8 +573,24 @@ async function addPost(content){
 
 
 async function fetchAssignments(){
-        structureTypeSpanEl.textContent = "📄 assignments"
-    classInputLabelEl.textContent = "🎓 create assignment"
+        structureTypeSpanEl.textContent = "assignments"
+    classInputLabelEl.textContent = "create assignment"
+
+    classInputLabelEl.textContent = "create a folder"
+    structureTypeSpanEl.textContent = "folders"
+
+
+    const materialIconInput = document.createElement("span")
+    clearElement(classInputHeaderIcon)
+    materialIconInput.textContent = "assignment"
+    materialIconInput.classList.add("material-symbols-rounded")
+    classInputHeaderIcon.appendChild(materialIconInput)
+
+    const materialIconType = document.createElement("span")
+    clearElement(typeSpanStructureIcon)
+    materialIconType.textContent = "assignment"
+    materialIconType.classList.add("material-symbols-rounded")
+    typeSpanStructureIcon.appendChild(materialIconType)
 
 
     const foldersRef = collection(db, "folders")
@@ -591,7 +637,7 @@ function setCurrentAssignment(assignmentButton){
 
 
 async function fetchAssignmentContent(){
-    classInputLabelEl.textContent = "🎓 create a post"
+    classInputLabelEl.textContent = " create a post"
     const user = auth.currentUser
     const assignmentRef = collection(db, "posts")
     const classRef = doc(db, "classes", classCode)
@@ -721,7 +767,6 @@ async function getUserData(uid){
     const userDoc = await getDoc(docRef)
     const displayName = userDoc.data().displayName
     const photoURL = userDoc.data().photoURL
-    console.log("pppp")
     console.log(displayName)
     if(photoURL && displayName)
     {
@@ -742,12 +787,15 @@ async function fetchUser(user){
 }
 
 function renderUser(userData){
-    structureTypeSpanEl.textContent = "👥 users"
-    classInputLabelEl.textContent = ""
-
     const userButtonEl = document.createElement("button")
     const userNameEl = document.createElement("p")
     const photoURLEl = document.createElement("img")
+    const materialIconType = document.createElement("span")
+    clearElement(typeSpanStructureIcon)
+    materialIconType.textContent = "group"
+    structureTypeSpanEl.textContent = "users"
+    materialIconType.classList.add("material-symbols-rounded")
+    typeSpanStructureIcon.appendChild(materialIconType)
 
 
     userButtonEl.classList.add("user-el")
