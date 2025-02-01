@@ -576,10 +576,6 @@ async function fetchAssignments(){
         structureTypeSpanEl.textContent = "assignments"
     classInputLabelEl.textContent = "create assignment"
 
-    classInputLabelEl.textContent = "create a folder"
-    structureTypeSpanEl.textContent = "folders"
-
-
     const materialIconInput = document.createElement("span")
     clearElement(classInputHeaderIcon)
     materialIconInput.textContent = "assignment"
@@ -648,6 +644,7 @@ async function fetchAssignmentContent(){
     onSnapshot(q, (querySnapshot) => {  
         querySnapshot.forEach((message) => {
             clearElement(messagesDiv)
+            console.log("newbatch")
             renderAssignmentContent(message.data())
     })
             
