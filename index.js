@@ -639,22 +639,21 @@ async function fetchAssignmentContent(){
             unsubscribeMessages()
             
             if(!teacherStatus){
+                //not a teacher
                 const q = query(assignmentRef, where("folder","==", currentFolder), where("class","==", classCode), where("assignment","==", currentAssignment))
                 unsubscribeMessages = onSnapshot(q, (querySnapshot) => {  
-                    console.log("no teacher load")
+                    clearElement(messagesDiv)
                     querySnapshot.forEach((message) => {
-                        clearElement(messagesDiv)
                         renderAssignmentContent(message.data())
                 })
                         
                 })}
                 else{
+                    //is a teacher
                     const q = query(assignmentRef, and(or(where("recipient","==",user.uid), where("recipient","==",currentRecipient)), where("folder","==", currentFolder), where("class","==", classCode), where("assignment","==", currentAssignment)))
                     unsubscribeMessages = onSnapshot(q, (querySnapshot) => { 
-                    console.log("pp")
                     clearElement(messagesDiv)
                     querySnapshot.forEach((message) => {
-                        console.log("ss")
                         renderAssignmentContent(message.data())
                     
                 })      
