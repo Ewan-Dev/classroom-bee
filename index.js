@@ -637,7 +637,7 @@ async function fetchAssignmentContent(){
             currentRecipient = userButton.id
             console.log(currentRecipient)
             unsubscribeMessages()
-            
+            itemClickedStyling()
             if(!teacherStatus){
                 //not a teacher
                 const q = query(assignmentRef, where("folder","==", currentFolder), where("class","==", classCode), where("assignment","==", currentAssignment))
