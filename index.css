@@ -5,7 +5,7 @@
 input,
 button{
     --bg-color: 255, 255, 255;
-    --primary-color:  0, 0, 0;
+    --primary-color:  0, 5, 5;
     color:rgb(var(--primary-color));
     font-family: "DM Sans",'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
     border-radius: 0.5em;
@@ -154,7 +154,8 @@ button.user-el
 {
     display: flex;
     justify-content: left;
-    align-content: center;
+    align-items: center;
+
     margin: 0;
     width:100%;
     padding: 0.25em;
@@ -374,7 +375,6 @@ button.selected-item{
 
 .material-symbols-rounded {
     color: rgb(var(--primary-color));
-    margin: 0;
     font-size: 15px !important;
 
   }
@@ -402,4 +402,8 @@ button.selected-item{
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+  #all-users-button {
+    margin: 0.5em 0.65em 0.5em 0.75em;
+
   }

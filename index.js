@@ -49,8 +49,7 @@ const passwordFieldEl = document.getElementById("password")
 const signUpBtnEl = document.getElementById("sign-up")
 const signInBtnEl = document.getElementById("sign-in")
 const errorMessageEl = document.getElementById("signup-error")
-const provider = new GoogleAuthProvider();
-
+const provider = new GoogleAuthProvider()
 const welcomeMessageEl = document.getElementById("welcome-message")
 
 const classCodeInputEl = document.getElementById("class-input")
@@ -104,7 +103,8 @@ const classAdminBtn = document.getElementById("class-admin-button")
 const classInputHeaderIcon = document.getElementById("class-input-header-icon")
 const createClassAdminBtns = document.getElementsByClassName("control-button")
 const typeSpanStructureIcon =document.getElementById("type-span-structure-icon")
-
+const allUsersBtn = document.getElementById("students")
+let currentRecipient = null
 classCodeButtonEl.addEventListener("click", createOrJoinClass)
 signUpBtnEl.addEventListener("click", authCreateUserWithEmailAndPassword)
 signInBtnEl.addEventListener("click", authSignInWithEmailAndPassword)
@@ -132,11 +132,7 @@ classAssignmentInputBtnEl.addEventListener("click", function(){
         console.error("empty assignment creation input")
     }
 })
-classPostInputBtnEl.addEventListener("click", function(){
-    const classPostInputElValue = classPostInputEl.value
-    addPost(classPostInputElValue)
     
-})
 
 settingsBtnEl.addEventListener("click", function(){
     showElement(settingsDiv)
@@ -151,6 +147,8 @@ for (let createClassAdminBtn of createClassAdminBtns){
         classAdminDialog.close()
     })
 }
+
+
 /* AUTH FUNCTIONS */
 onAuthStateChanged(auth, (user)=>{
     if(user){
@@ -353,7 +351,7 @@ function itemClickedStyling(){
     for (let button of allClassSidebarBtns){
         button.addEventListener("click", () => {
         for(let btn of allClassSidebarBtns){
-            btn.classList.remove("selected-item");
+            btn.classList.remove("selected-item")
         }
         button.classList.add("selected-item")
         })
@@ -395,6 +393,7 @@ function itemClickedStyling(){
 
  function clearElement(element){
     element.innerHTML = ""
+    console.log("element clared")
 
  }
  
@@ -449,7 +448,7 @@ function itemClickedStyling(){
         return true
     }
     else{
-        return;
+        return
     }
  }
 
@@ -505,18 +504,6 @@ function setCurrentFolder(){
     }
 }
 
-async function teacherUid(){
-    try{
-    const classRef = doc(db,"classes", classCode)
-    const classSnap = await getDoc(classRef)
-    const uid = classSnap.data().teacher 
-    return uid
-    }
-    catch(err){
-        console.error(err)
-        throw err
-    }
- }
 
  async function addAssignment(assignmentName){
     const user = auth.currentUser
@@ -533,23 +520,24 @@ async function teacherUid(){
   })
 }
 catch (error) {
-    console.error("Error adding assignment:", error);
+    console.error("Error adding assignment:", error)
 }
 }
 
-async function addPost(content){
+async function addPost(content, recipientUid){
     const user = auth.currentUser
     const assignmentRef = collection(db, "posts")
-    const teacherId =  await teacherUid()
-    if(teacherId){
+    const teacherStatus =  await isTeacher(classCode)
+    console.log("ADD POST")
+    if(teacherStatus){
       addDoc(assignmentRef, {
           assignment: currentAssignment,
           body: content,
           class: classCode,
           folder: currentFolder,
-          isClassDiscussion: false,
-          teacher: true,
+          isTeacher: true,
           uid: user.uid,
+          recipient: recipientUid,
           userDisplayName: user.displayName,
           createdAt: serverTimestamp()
       }
@@ -561,7 +549,6 @@ async function addPost(content){
             body: content,
             class: classCode,
             folder: currentFolder,
-            isClassDiscussion: false,
             teacher: false,
             uid: user.uid,
             userDisplayName: user.displayName,
@@ -633,29 +620,72 @@ function setCurrentAssignment(assignmentButton){
 
 
 async function fetchAssignmentContent(){
-    classInputLabelEl.textContent = " create a post"
+    classInputLabelEl.textContent = "create a post"
     const user = auth.currentUser
     const assignmentRef = collection(db, "posts")
     const classRef = doc(db, "classes", classCode)
     const classSnap = await getDoc(classRef)
     const classStudents = classSnap.data().students
     fetchUsers(classStudents)
-    const q = query(assignmentRef, and(or(where("teacher","==",true),where("uid","==", user.uid)), where("folder","==", currentFolder), where("class","==", classCode), where("assignment","==", currentAssignment)))
-    onSnapshot(q, (querySnapshot) => {  
-        querySnapshot.forEach((message) => {
+    const teacherStatus = await isTeacher(classCode)
+    const userButtons = document.getElementsByClassName("user-el")
+    let unsubscribeMessages = () => {}
+    for (let userButton of userButtons ){
+        console.log(1)
+        userButton.addEventListener("click", function(){
             clearElement(messagesDiv)
-            console.log("newbatch")
-            renderAssignmentContent(message.data())
-    })
+            currentRecipient = userButton.id
+            console.log(currentRecipient)
+            unsubscribeMessages()
             
-    })
+            if(!teacherStatus){
+                const q = query(assignmentRef, where("folder","==", currentFolder), where("class","==", classCode), where("assignment","==", currentAssignment))
+                unsubscribeMessages = onSnapshot(q, (querySnapshot) => {  
+                    console.log("no teacher load")
+                    querySnapshot.forEach((message) => {
+                        clearElement(messagesDiv)
+                        renderAssignmentContent(message.data())
+                })
+                        
+                })}
+                else{
+                    const q = query(assignmentRef, and(or(where("recipient","==",user.uid), where("recipient","==",currentRecipient)), where("folder","==", currentFolder), where("class","==", classCode), where("assignment","==", currentAssignment)))
+                    unsubscribeMessages = onSnapshot(q, (querySnapshot) => { 
+                    console.log("pp")
+                    clearElement(messagesDiv)
+                    querySnapshot.forEach((message) => {
+                        console.log("ss")
+                        renderAssignmentContent(message.data())
+                    
+                })      
+                console.log("rr")     
+                })
+                }
+            
+             
+        })}
+        classPostInputBtnEl.addEventListener("click", function(){
+            const classPostInputElValue = classPostInputEl.value
+            console.log(classPostInputElValue)
+            addPost(classPostInputElValue, currentRecipient) 
 
+})
 
 }
 
+
 function fetchUsers(students){
-    if(students){
+    const materialIconType = document.createElement("span")
+    clearElement(typeSpanStructureIcon)
     clearElement(navSidebarEl)
+    materialIconType.textContent = "person"
+    structureTypeSpanEl.textContent = "users"
+    materialIconType.classList.add("material-symbols-rounded")
+    materialIconType.classList.add("button-icon-el")  
+    typeSpanStructureIcon.appendChild(materialIconType)
+
+    addAllUsersBtn()
+    if(students){
     students.forEach((user)=>{
         console.log(user)
         fetchUser(user)
@@ -675,7 +705,7 @@ async function renderAssignmentContent(messageData){
     const userPfpEl = document.createElement("img")
 
     const formattedDate = dateFormatting(messageData.createdAt)
-    
+
         messageDiv.classList.add("assignment-content-div")
 
         messageContentEl.classList.add("assignment-content-p")
@@ -764,12 +794,15 @@ async function getUserData(uid){
     const userDoc = await getDoc(docRef)
     const displayName = userDoc.data().displayName
     const photoURL = userDoc.data().photoURL
+    const userUid = userDoc.data().uid
     console.log(displayName)
     if(photoURL && displayName)
     {
     return {displayName1: displayName,
-        photoURL1: photoURL} 
+        photoURL1: photoURL,
+        userUid:  userUid
     }
+}
     else{
         return
     }
@@ -778,8 +811,11 @@ async function getUserData(uid){
 
 async function fetchUser(user){
         const userData = await getUserData(user)
-        renderUser(userData)
-        console.log(userData.photoURL1)
+        if(userData){
+            renderUser(userData)
+            console.log(userData.photoURL1)
+        }
+        
 
 }
 
@@ -787,28 +823,36 @@ function renderUser(userData){
     const userButtonEl = document.createElement("button")
     const userNameEl = document.createElement("p")
     const photoURLEl = document.createElement("img")
-    const materialIconType = document.createElement("span")
-    clearElement(typeSpanStructureIcon)
-    materialIconType.textContent = "group"
-    structureTypeSpanEl.textContent = "users"
-    materialIconType.classList.add("material-symbols-rounded")
-    typeSpanStructureIcon.appendChild(materialIconType)
-
 
     userButtonEl.classList.add("user-el")
+
+    
     userNameEl.textContent = userData.displayName1
     photoURLEl.src = userData.photoURL1
 
     userButtonEl.classList.add("class-sidebar-btn")
     photoURLEl.classList.add("user-img-btn")
 
+    userButtonEl.id = userData.userUid
+
     userButtonEl.appendChild(photoURLEl)
     userButtonEl.appendChild(userNameEl)
     navSidebarEl.appendChild(userButtonEl)
-    console.log("loaded")
     }
 
-
+function addAllUsersBtn(){
+    const allUsersButtonEl = document.createElement("button")
+    const buttonText = document.createElement("p")
+    const materialIconType = document.createElement("span")
+    materialIconType.textContent = "group"
+    buttonText.textContent = "all students"
+    materialIconType.id = "all-users-button"
+    materialIconType.classList.add("material-symbols-rounded")
+    allUsersButtonEl.appendChild(materialIconType)
+    allUsersButtonEl.appendChild(buttonText)
+    allUsersButtonEl.classList.add("user-el")
+    navSidebarEl.appendChild(allUsersButtonEl)
+}
 
 
  /* CSS FUNCTIONS*/
