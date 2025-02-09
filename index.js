@@ -103,7 +103,6 @@ const classAdminBtn = document.getElementById("class-admin-button")
 const classInputHeaderIcon = document.getElementById("class-input-header-icon")
 const createClassAdminBtns = document.getElementsByClassName("control-button")
 const typeSpanStructureIcon =document.getElementById("type-span-structure-icon")
-const allUsersBtn = document.getElementById("students")
 let currentRecipient = null
 classCodeButtonEl.addEventListener("click", createOrJoinClass)
 signUpBtnEl.addEventListener("click", authCreateUserWithEmailAndPassword)
@@ -640,7 +639,7 @@ async function fetchAssignmentContent(){
             itemClickedStyling()
             if(!teacherStatus){
                 //not a teacher
-                const q = query(assignmentRef, where("folder","==", currentFolder), where("class","==", classCode), where("assignment","==", currentAssignment))
+                const q = query(assignmentRef, and(or(where("recipient","==",user.uid),where("recipient","==","message-for-all-users")), where("folder","==", currentFolder), where("class","==", classCode), where("assignment","==", currentAssignment)))
                 unsubscribeMessages = onSnapshot(q, (querySnapshot) => {  
                     clearElement(messagesDiv)
                     querySnapshot.forEach((message) => {
@@ -656,13 +655,16 @@ async function fetchAssignmentContent(){
                     querySnapshot.forEach((message) => {
                         renderAssignmentContent(message.data())
                     
-                })      
-                console.log("rr")     
+                })          
                 })
                 }
             
              
         })}
+        const allUsersButton = document.getElementById("all-users-button")
+        allUsersButton.addEventListener("click", function(){
+            currentRecipient = allUsersButton.id
+        })
         classPostInputBtnEl.addEventListener("click", function(){
             const classPostInputElValue = classPostInputEl.value
             console.log(classPostInputElValue)
@@ -845,11 +847,12 @@ function addAllUsersBtn(){
     const materialIconType = document.createElement("span")
     materialIconType.textContent = "group"
     buttonText.textContent = "all students"
-    materialIconType.id = "all-users-button"
+    materialIconType.id = "all-users-icon"
     materialIconType.classList.add("material-symbols-rounded")
     allUsersButtonEl.appendChild(materialIconType)
     allUsersButtonEl.appendChild(buttonText)
     allUsersButtonEl.classList.add("user-el")
+    allUsersButtonEl.id = "all-users-button"
     navSidebarEl.appendChild(allUsersButtonEl)
 }
 
