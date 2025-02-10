@@ -550,6 +550,7 @@ async function addPost(content, recipientUid){
             folder: currentFolder,
             teacher: false,
             uid: user.uid,
+            recipient: null,
             userDisplayName: user.displayName,
             createdAt: serverTimestamp()
         }
@@ -639,7 +640,9 @@ async function fetchAssignmentContent(){
             itemClickedStyling()
             if(!teacherStatus){
                 //not a teacher
-                const q = query(assignmentRef, and(or(where("recipient","==",user.uid),where("recipient","==","message-for-all-users")), where("folder","==", currentFolder), where("class","==", classCode), where("assignment","==", currentAssignment)))
+                unsubscribeMessages()
+                console.log("not a tecaher")
+                const q = query(assignmentRef, and(or(where("recipient","==",user.uid),where("uid","==",user.uid),where("recipient","==","all-users-button")), where("folder","==", currentFolder), where("class","==", classCode), where("assignment","==", currentAssignment)))
                 unsubscribeMessages = onSnapshot(q, (querySnapshot) => {  
                     clearElement(messagesDiv)
                     querySnapshot.forEach((message) => {
@@ -649,7 +652,8 @@ async function fetchAssignmentContent(){
                 })}
                 else{
                     //is a teacher
-                    const q = query(assignmentRef, and(or(where("recipient","==",user.uid), where("recipient","==",currentRecipient)), where("folder","==", currentFolder), where("class","==", classCode), where("assignment","==", currentAssignment)))
+                    unsubscribeMessages()
+                    const q = query(assignmentRef, and(or(where("recipient","==",currentRecipient), where("uid","==",currentRecipient))), where("folder","==", currentFolder), where("class","==", classCode), where("assignment","==", currentAssignment))
                     unsubscribeMessages = onSnapshot(q, (querySnapshot) => { 
                     clearElement(messagesDiv)
                     querySnapshot.forEach((message) => {
