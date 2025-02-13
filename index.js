@@ -626,44 +626,61 @@ async function fetchAssignmentContent(){
     const classRef = doc(db, "classes", classCode)
     const classSnap = await getDoc(classRef)
     const classStudents = classSnap.data().students
-    fetchUsers(classStudents)
     const teacherStatus = await isTeacher(classCode)
-    const userButtons = document.getElementsByClassName("user-el")
     let unsubscribeMessages = () => {}
+    if(teacherStatus){
+        fetchUsers(classStudents)
+    }
+    if(!teacherStatus){
+        //not a teacher
+        
+        unsubscribeMessages()
+        console.log("not a tecaher")
+        console.log(currentAssignment)
+            console.log(classCode)
+            console.log(currentFolder)
+            console.log(currentRecipient)
+        const q = query(assignmentRef, and(
+            or(where("recipient","==",user.uid),
+            where("uid","==",user.uid),
+            where("recipient","==","all-users-button")), 
+            where("folder","==", currentFolder), 
+            where("class","==", classCode), 
+            where("assignment","==", currentAssignment)))
+        unsubscribeMessages = onSnapshot(q, (querySnapshot) => {  
+            clearElement(messagesDiv)
+            querySnapshot.forEach((message) => {
+                renderAssignmentContent(message.data())
+        })
+                
+        })}
+        else{
+    const userButtons = document.getElementsByClassName("user-el")
     for (let userButton of userButtons ){
         console.log(1)
+        
         userButton.addEventListener("click", function(){
             clearElement(messagesDiv)
             currentRecipient = userButton.id
             console.log(currentRecipient)
             unsubscribeMessages()
             itemClickedStyling()
-            if(!teacherStatus){
-                //not a teacher
-                unsubscribeMessages()
-                console.log("not a tecaher")
-                const q = query(assignmentRef, and(or(where("recipient","==",user.uid),where("uid","==",user.uid),where("recipient","==","all-users-button")), where("folder","==", currentFolder), where("class","==", classCode), where("assignment","==", currentAssignment)))
-                unsubscribeMessages = onSnapshot(q, (querySnapshot) => {  
-                    clearElement(messagesDiv)
-                    querySnapshot.forEach((message) => {
-                        renderAssignmentContent(message.data())
-                })
-                        
-                })}
-                else{
                     //is a teacher
                     unsubscribeMessages()
+                    console.log(currentAssignment)
+                    console.log(classCode)
+                    console.log(currentFolder)
+                    console.log(currentRecipient)
                     const q = query(
                         assignmentRef,
                         and(
                             or(
-                                where("recipient", "==", user.uid),
                                 where("recipient", "==", currentRecipient),
-                                where("recipient", "==", currentRecipient)
+                                where("uid", "==", currentRecipient)
                             ),
                             where("folder", "==", currentFolder),
                             where("class", "==", classCode),
-                            where("assignment", "==", "all-users-button")
+                            where("assignment", "==", currentAssignment)
                         )
                     )
                     unsubscribeMessages = onSnapshot(q, (querySnapshot) => { 
@@ -673,22 +690,23 @@ async function fetchAssignmentContent(){
                     
                 })          
                 })
-                }
+            })}
             
              
-        })}
+        }}
         const allUsersButton = document.getElementById("all-users-button")
+        if(allUsersButton){
         allUsersButton.addEventListener("click", function(){
             currentRecipient = allUsersButton.id
-        })
+        })}
+        if(classPostInputBtnEl){
         classPostInputBtnEl.addEventListener("click", function(){
             const classPostInputElValue = classPostInputEl.value
             console.log(classPostInputElValue)
             addPost(classPostInputElValue, currentRecipient) 
 
-})
+})}
 
-}
 
 
 function fetchUsers(students){
