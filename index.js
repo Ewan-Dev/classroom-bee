@@ -658,11 +658,12 @@ async function fetchAssignmentContent(){
                         and(
                             or(
                                 where("recipient", "==", user.uid),
+                                where("recipient", "==", currentRecipient),
                                 where("recipient", "==", currentRecipient)
                             ),
                             where("folder", "==", currentFolder),
                             where("class", "==", classCode),
-                            where("assignment", "==", currentAssignment)
+                            where("assignment", "==", "all-users-button")
                         )
                     )
                     unsubscribeMessages = onSnapshot(q, (querySnapshot) => { 
