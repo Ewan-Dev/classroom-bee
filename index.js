@@ -653,7 +653,18 @@ async function fetchAssignmentContent(){
                 else{
                     //is a teacher
                     unsubscribeMessages()
-                    const q = query(assignmentRef, and(or(where("recipient","==",currentRecipient), where("uid","==",currentRecipient))), where("folder","==", currentFolder), where("class","==", classCode), where("assignment","==", currentAssignment))
+                    const q = query(
+                        assignmentRef,
+                        and(
+                            or(
+                                where("recipient", "==", user.uid),
+                                where("recipient", "==", currentRecipient)
+                            ),
+                            where("folder", "==", currentFolder),
+                            where("class", "==", classCode),
+                            where("assignment", "==", currentAssignment)
+                        )
+                    )
                     unsubscribeMessages = onSnapshot(q, (querySnapshot) => { 
                     clearElement(messagesDiv)
                     querySnapshot.forEach((message) => {
