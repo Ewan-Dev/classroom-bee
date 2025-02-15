@@ -24,7 +24,8 @@ import { getFirestore,
     or,
     and,
     addDoc,
-    serverTimestamp
+    serverTimestamp,
+    orderBy
  } from 'https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js'
 
 const firebaseConfig = {
@@ -104,6 +105,8 @@ const classInputHeaderIcon = document.getElementById("class-input-header-icon")
 const createClassAdminBtns = document.getElementsByClassName("control-button")
 const typeSpanStructureIcon =document.getElementById("type-span-structure-icon")
 let currentRecipient = null
+let userButtons = document.getElementsByClassName("user-el")
+let classStudents = []
 classCodeButtonEl.addEventListener("click", createOrJoinClass)
 signUpBtnEl.addEventListener("click", authCreateUserWithEmailAndPassword)
 signInBtnEl.addEventListener("click", authSignInWithEmailAndPassword)
@@ -400,7 +403,7 @@ function itemClickedStyling(){
 
     classCode = event.currentTarget.id 
     console.log(`current class: ${classCode}`)
-    const teacherStatus = await isTeacher(classCode)
+    let teacherStatus = await isTeacher(classCode)
     classInputLabelEl.textContent = "create a folder"
     structureTypeSpanEl.textContent = "folders"
 
@@ -427,12 +430,17 @@ function itemClickedStyling(){
 
     if(teacherStatus){
         showElement(classAdminBtn)
+    
+    const classRef = doc(db, "classes", classCode);
+        const classSnap = await getDoc(classRef);
+        if (classSnap.exists()) {
+            classStudents = classSnap.data().students || [];
+        }
+    } else {
+        hideElement(classAdminBtn);
     }
-    else{
-        hideElement(classAdminBtn)
-    }
-    }
- 
+
+}
 
  function detectClassClick(){
     for(let classBtnEl of classBtnEls){
@@ -526,7 +534,7 @@ catch (error) {
 async function addPost(content, recipientUid){
     const user = auth.currentUser
     const assignmentRef = collection(db, "posts")
-    const teacherStatus =  await isTeacher(classCode)
+    let teacherStatus =  await isTeacher(classCode)
     console.log("ADD POST")
     if(teacherStatus){
       addDoc(assignmentRef, {
@@ -624,29 +632,14 @@ async function fetchAssignmentContent(){
     const user = auth.currentUser
     const assignmentRef = collection(db, "posts")
     const classRef = doc(db, "classes", classCode)
-    const classSnap = await getDoc(classRef)
-    const classStudents = classSnap.data().students
-    const teacherStatus = await isTeacher(classCode)
+    const classSnap = await getDoc(classRef) 
+    let teacherStatus = await isTeacher(classCode)
     let unsubscribeMessages = () => {}
-    if(teacherStatus){
-        fetchUsers(classStudents)
-    }
     if(!teacherStatus){
         //not a teacher
-        
         unsubscribeMessages()
         console.log("not a tecaher")
-        console.log(currentAssignment)
-            console.log(classCode)
-            console.log(currentFolder)
-            console.log(currentRecipient)
-        const q = query(assignmentRef, and(
-            or(where("recipient","==",user.uid),
-            where("uid","==",user.uid),
-            where("recipient","==","all-users-button")), 
-            where("folder","==", currentFolder), 
-            where("class","==", classCode), 
-            where("assignment","==", currentAssignment)))
+        const q = query(assignmentRef, and(or(where("recipient","==",user.uid),where("uid","==",user.uid),where("recipient","==","all-users-button")), where("folder","==", currentFolder), where("class","==", classCode), where("assignment","==", currentAssignment)),orderBy("createdAt", "desc"))
         unsubscribeMessages = onSnapshot(q, (querySnapshot) => {  
             clearElement(messagesDiv)
             querySnapshot.forEach((message) => {
@@ -655,10 +648,11 @@ async function fetchAssignmentContent(){
                 
         })}
         else{
-    const userButtons = document.getElementsByClassName("user-el")
+            fetchUsers(classStudents)
+            teacherStatus = await isTeacher(classCode)
+            userButtons = document.getElementsByClassName("user-el")
     for (let userButton of userButtons ){
         console.log(1)
-        
         userButton.addEventListener("click", function(){
             clearElement(messagesDiv)
             currentRecipient = userButton.id
@@ -667,21 +661,18 @@ async function fetchAssignmentContent(){
             itemClickedStyling()
                     //is a teacher
                     unsubscribeMessages()
-                    console.log(currentAssignment)
-                    console.log(classCode)
-                    console.log(currentFolder)
-                    console.log(currentRecipient)
                     const q = query(
                         assignmentRef,
                         and(
                             or(
-                                where("recipient", "==", currentRecipient),
-                                where("uid", "==", currentRecipient)
+                                where("uid", "==", currentRecipient),
+                                where("recipient", "==", currentRecipient)
                             ),
                             where("folder", "==", currentFolder),
                             where("class", "==", classCode),
                             where("assignment", "==", currentAssignment)
-                        )
+                        ),
+                        orderBy("createdAt", "desc")
                     )
                     unsubscribeMessages = onSnapshot(q, (querySnapshot) => { 
                     clearElement(messagesDiv)
@@ -690,23 +681,24 @@ async function fetchAssignmentContent(){
                     
                 })          
                 })
-            })}
+                }
             
              
-        }}
+        )}}
         const allUsersButton = document.getElementById("all-users-button")
         if(allUsersButton){
         allUsersButton.addEventListener("click", function(){
             currentRecipient = allUsersButton.id
         })}
-        if(classPostInputBtnEl){
+
         classPostInputBtnEl.addEventListener("click", function(){
             const classPostInputElValue = classPostInputEl.value
             console.log(classPostInputElValue)
             addPost(classPostInputElValue, currentRecipient) 
 
-})}
+})
 
+}
 
 
 function fetchUsers(students){
@@ -724,8 +716,10 @@ function fetchUsers(students){
     students.forEach((user)=>{
         console.log(user)
         fetchUser(user)
+       
     })
     }
+    
 }
 async function renderAssignmentContent(messageData){
     const messageDiv = document.createElement("div")
