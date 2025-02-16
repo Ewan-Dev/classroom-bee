@@ -106,6 +106,7 @@ const createClassAdminBtns = document.getElementsByClassName("control-button")
 const typeSpanStructureIcon =document.getElementById("type-span-structure-icon")
 let currentRecipient = null
 let userButtons = document.getElementsByClassName("user-el")
+let usersSet = new Set()
 let classStudents = []
 classCodeButtonEl.addEventListener("click", createOrJoinClass)
 signUpBtnEl.addEventListener("click", authCreateUserWithEmailAndPassword)
@@ -652,7 +653,6 @@ async function fetchAssignmentContent(){
             teacherStatus = await isTeacher(classCode)
             userButtons = document.getElementsByClassName("user-el")
     for (let userButton of userButtons ){
-        console.log(1)
         userButton.addEventListener("click", function(){
             clearElement(messagesDiv)
             currentRecipient = userButton.id
@@ -703,6 +703,7 @@ async function fetchAssignmentContent(){
 
 function fetchUsers(students){
     const materialIconType = document.createElement("span")
+    usersSet = new Set()
     clearElement(typeSpanStructureIcon)
     clearElement(navSidebarEl)
     materialIconType.textContent = "person"
@@ -715,7 +716,7 @@ function fetchUsers(students){
     if(students){
     students.forEach((user)=>{
         console.log(user)
-        fetchUser(user)
+        fetchUser(user, usersSet)
        
     })
     }
@@ -732,23 +733,42 @@ async function renderAssignmentContent(messageData){
     const messageContainer = document.createElement("div")
     const breakEl = document.createElement("p")
     const userPfpEl = document.createElement("img")
-
     const formattedDate = dateFormatting(messageData.createdAt)
+    let userAlreadyFetched = false
 
         messageDiv.classList.add("assignment-content-div")
 
         messageContentEl.classList.add("assignment-content-p")
         messageContentEl.textContent = messageData.body
-        const userData = await getUserData(messageData.uid)
-        const displayName = userData.displayName1
-        const pfpUrl = userData.photoURL1
-        messageSentByEl.textContent = displayName
+
+        for(let userOfSet of usersSet){
+            if(userOfSet.userUid === messageData.uid){
+                userAlreadyFetched = true   
+                messageSentByEl.textContent = userOfSet.displayName
+                userPfpEl.src = userOfSet.photoURL
+                break
+            }
+        }
+
+        if(!userAlreadyFetched){
+            console.log("fetch")
+            const userData = await getUserData(messageData.uid)
+            if(userData){
+                usersSet.add({userUid:userData.userUid,
+                    photoURL:userData.photoURL,
+                    displayName:userData.displayName
+                })
+                const displayName = userData.displayName
+                const pfpUrl = userData.photoURL
+                messageSentByEl.textContent = displayName
+                userPfpEl.src = pfpUrl
+            }
+        }      
         messageCreatedAt.textContent = formattedDate
         
         
         breakEl.textContent = "•"
 
-        userPfpEl.src = pfpUrl
 
         messageInfoDiv.classList.add("message-info")
         messageContainer.classList.add("message-container")
@@ -827,8 +847,8 @@ async function getUserData(uid){
     console.log(displayName)
     if(photoURL && displayName)
     {
-    return {displayName1: displayName,
-        photoURL1: photoURL,
+    return {displayName: displayName,
+        photoURL: photoURL,
         userUid:  userUid
     }
 }
@@ -838,15 +858,26 @@ async function getUserData(uid){
             
 }
 
-async function fetchUser(user){
+async function fetchUser(user, usersSet){
+    const userAlreadyFetched = false
+    for(let userOfSet of usersSet){
+    if(userOfSet.userUid === user){
+        userAlreadyFetched = true
+        break
+    }
+    }
+
+    if(!userAlreadyFetched){
         const userData = await getUserData(user)
         if(userData){
+            usersSet.add({userUid:userData.userUid,
+                photoURL:userData.photoURL,
+                displayName:userData.displayName
+            })
             renderUser(userData)
-            console.log(userData.photoURL1)
         }
-        
-
-}
+    }      
+    }
 
 function renderUser(userData){
     const userButtonEl = document.createElement("button")
@@ -856,8 +887,8 @@ function renderUser(userData){
     userButtonEl.classList.add("user-el")
 
     
-    userNameEl.textContent = userData.displayName1
-    photoURLEl.src = userData.photoURL1
+    userNameEl.textContent = userData.displayName
+    photoURLEl.src = userData.photoURL
 
     userButtonEl.classList.add("class-sidebar-btn")
     photoURLEl.classList.add("user-img-btn")
