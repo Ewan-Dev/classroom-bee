@@ -666,7 +666,8 @@ async function fetchAssignmentContent(){
                         and(
                             or(
                                 where("uid", "==", currentRecipient),
-                                where("recipient", "==", currentRecipient)
+                                where("recipient", "==", currentRecipient),
+                                where("recipient","==","all-users-button")
                             ),
                             where("folder", "==", currentFolder),
                             where("class", "==", classCode),
