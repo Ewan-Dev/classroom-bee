@@ -880,7 +880,9 @@ function addAllUsersBtn(){
     allUsersButtonEl.appendChild(materialIconType)
     allUsersButtonEl.appendChild(buttonText)
     allUsersButtonEl.classList.add("user-el")
+    allUsersButtonEl.classList.add("class-sidebar-btn")
     allUsersButtonEl.id = "all-users-button"
+
     navSidebarEl.appendChild(allUsersButtonEl)
 }
 
