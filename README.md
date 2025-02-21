@@ -1,7 +1,6 @@
 <h1>🐝 Classroom Bee 📎</h1>
 <p><i>your streamlined paperless classroom</i></p>
 <hr>
-<hr>
 <h3>🍔 tech stack</h3>
 <table>
   <tr><th>💻 frontend</th><th>🛠️ backend</th></tr>
