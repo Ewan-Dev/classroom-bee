@@ -1,4 +1,3 @@
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js"
 import {getAnalytics} from "https://www.gstatic.com/firebasejs/11.1.0/firebase-analytics.js"
 import {getAuth,
@@ -51,15 +50,23 @@ const signUpBtnEl = document.getElementById("sign-up")
 const signInBtnEl = document.getElementById("sign-in")
 const errorMessageEl = document.getElementById("signup-error")
 const provider = new GoogleAuthProvider()
-const welcomeMessageEl = document.getElementById("welcome-message")
 
 const classCodeInputEl = document.getElementById("class-input")
-const classCodeButtonEl = document.getElementById("class-add-button")
+const classJoinInitialButtonEl = document.getElementById("join-class-initial")
+const classControlInstructionsEl = document.getElementById("instruction-message-class-controls")
+const classCreateInitialBtn = document.getElementById("create-class-initial")
+const classJoinButtonEl = document.getElementById("class-join-button")
 
+const classCodeButtonEl = document.getElementById("class-create-button")
+const classCreateButtonEl = document.getElementById("class-add-button")
+const classNameInputButtonEl = document.getElementById("class-name")
 const classFolderInputBtnEl = document.getElementById("class-folder-admin-button")
 const classFolderInputEl = document.getElementById("class-folder-admin-input")
 const navSidebarEl = document.getElementById("nav-sidebar")
 const classBtnEls = document.getElementsByClassName("class-el")
+const classControlsDiv = document.getElementById("class-controls-container")
+const classControlInputsDiv = document.getElementById("class-controls-inputs-container")
+const classControlButtonsDiv = document.getElementById("class-controls-buttons-container")
 
 let classCode = ""
 let currentFolder = ""
@@ -102,13 +109,15 @@ const classCodeAdminCloseBtn = document.getElementById("close-class-control-butt
 
 const classAdminBtn = document.getElementById("class-admin-button")
 const classInputHeaderIcon = document.getElementById("class-input-header-icon")
-const createClassAdminBtns = document.getElementsByClassName("control-button")
-const typeSpanStructureIcon =document.getElementById("type-span-structure-icon")
+const closeAdminWindowBtns = document.getElementsByClassName("close-control-button")
+const typeSpanStructureIcon = document.getElementById("type-span-structure-icon")
+
+const classNameHeaderEl = document.getElementById("class-name-head")
+const classCodeHeaderEl = document.getElementById("class-code-head")
 let currentRecipient = null
 let userButtons = document.getElementsByClassName("user-el")
 let usersSet = new Set()
 let classStudents = []
-classCodeButtonEl.addEventListener("click", createOrJoinClass)
 signUpBtnEl.addEventListener("click", authCreateUserWithEmailAndPassword)
 signInBtnEl.addEventListener("click", authSignInWithEmailAndPassword)
 signInWithGoogleButton.addEventListener("click", authGoogle)
@@ -122,9 +131,6 @@ classFolderInputBtnEl.addEventListener("click", function(){
     addFolder(classFolderInputElValue)
 } )
 
-classCodeAdminCloseBtn.addEventListener("click", function(){
-    classAdminDialog.close()
-})
 
 classAssignmentInputBtnEl.addEventListener("click", function(){
     const classAssignmentInputElValue = classAssignmentInputEl.value
@@ -144,22 +150,54 @@ settingsBtnEl.addEventListener("click", function(){
 
 displayNameAuthBtnEl.addEventListener("click", updateUserDisplayName)
 pfpAuthBtnEl.addEventListener("click", updateUserPfpUrl)
+classJoinInitialButtonEl.addEventListener("click",function(){
+    hideAllChildren(classControlsDiv)
+    showElementFlex(classControlButtonsDiv)
+    showElementFlex(classControlInputsDiv)
+    showElement(classCodeInputEl)
+    showElement(classCodeAdminCloseBtn)
+    showElement(classJoinButtonEl)
+})
+classCreateInitialBtn.addEventListener("click", function(){
 
-for (let createClassAdminBtn of createClassAdminBtns){
-    createClassAdminBtn.addEventListener("click", function(){
+    hideAllChildren(classControlsDiv)
+    showElementFlex(classControlButtonsDiv)
+    showElementFlex(classControlInputsDiv)
+    showElement(classCodeAdminCloseBtn)
+    showElement(classCodeButtonEl)
+    showElement(classNameInputButtonEl)
+    
+    classInputLabelEl.textContent = "give your class a name"
+})
+classJoinButtonEl.addEventListener("click", function(){
+    classAdminDialog.close()
+    classCode = classCodeInputEl.value
+    joinClass(classCode)
+})
+classCodeButtonEl.addEventListener("click", function(){
+    const classNameValue = classNameInputButtonEl.value
+    classAdminDialog.close()
+    createClass(classNameValue)
+})
+
+for (let closeAdminWindowBtn of closeAdminWindowBtns)
+{
+    closeAdminWindowBtn.addEventListener("click", function(){
         classAdminDialog.close()
     })
-}
-
-
-/* AUTH FUNCTIONS */
+}/* AUTH FUNCTIONS */
 onAuthStateChanged(auth, (user)=>{
     if(user){
         console.log("logged in")
         hideElement(loggedOutViewEl)
         showElementFlex(loggedInViewEl)
         const displayName = user.displayName
-        welcomeMessageEl.textContent = `Hello, ${displayName}`
+        hideElement(classCodeButtonEl)
+        hideElement(classCodeInputEl)
+        hideElement(classCodeAdminCloseBtn)
+        hideElement(classNameInputButtonEl)
+        hideElement(classCreateButtonEl)
+        hideElement(classJoinButtonEl)
         hideElement(classFolderInputBtnEl)
         hideElement(classFolderInputEl)
         hideElement(classAssignmentInputBtnEl)
@@ -284,56 +322,51 @@ else{
 }
 
 /* FIRESTORE */
+function generateClassCode(){
+    const code =  Math.random().toString(36).slice(2, 7).toUpperCase();
+    return code
+}
 
-async function createOrJoinClass(){
-    const userId = auth.currentUser.uid
-    classCode = classCodeInputEl.value
-    const classRef = doc(db, "classes", classCode)
-    const usersRef = doc(db, "users", userId)
+async function joinClass(code){
+    const classRef = doc(db, "classes", code)
     const classSnap = await getDoc(classRef)
-    const userSnap = await getDoc(usersRef)
-    const existingClasses = userSnap.exists() ? (userSnap.data().classes || []) : []
     const existingMembers = classSnap.exists() ? (classSnap.data().members || []) : []
     const existingStudents = classSnap.exists() ? (classSnap.data().students || []) : []
-    classAdminDialog.close()
+    if(classSnap.exists()){
+    try{
+        setDoc(classRef, {
+            students: [...existingStudents, auth.currentUser.uid],
+            members: [...existingMembers, auth.currentUser.uid]
+            
+        }, {merge:true})
+        
+    }
+    catch(err){
+        console.error(err)
+    }
+}
+}
+async function createClass(name){
+    const classCode = generateClassCode()
+    const userId = auth.currentUser.uid
+    const classRef = doc(db, "classes", classCode)
+    const classSnap = await getDoc(classRef)
+    const existingMembers = classSnap.exists() ? (classSnap.data().members || []) : [] 
     if(!classSnap.exists()){
-        try{
-            setDoc(usersRef, {
-                displayName: auth.currentUser.displayName,
-                uid: userId,
-                
-            },{merge:true})
-            setDoc(classRef, {
-                code: classCode,
-                teacher: userId,
-                members: [...existingMembers, auth.currentUser.uid]
-            }, {merge:true})
-            
-        }
-        catch(err){
-            console.error(err)
-        }
+    try{
+        
+        setDoc(classRef, {
+            code: classCode,
+            className:name,
+            teacher: userId,
+            members: [...existingMembers, auth.currentUser.uid]
+        }, {merge:true})
+        
     }
-    else{
-        try{
-            
-            setDoc(usersRef, {
-                displayName: auth.currentUser.displayName,
-                uid: userId,
-                
-            }, {merge:true})
-            setDoc(classRef, {
-                students: [...existingStudents, auth.currentUser.uid],
-                members: [...existingMembers, auth.currentUser.uid]
-                
-            }, {merge:true})
-            
-        }
-        catch(err){
-            console.error(err)
-        }
-
+    catch(err){
+        console.error(err)
     }
+}
 }
 function fetchClasses(user){
     const classesRef = collection(db, "classes")
@@ -380,14 +413,15 @@ function itemClickedStyling(){
 
     querySnapshot.forEach((doc)=>{
         const classDocData = doc.data()
-        const className = classDocData.code
+        const className = classDocData.className
+        const classCode = classDocData.code
         const classButtonEl = document.createElement("button")
         classButtonEl.classList.add("class-el")
         classButtonEl.classList.add("class-sidebar-btn")
         const classNameEl = document.createElement("p")
         classNameEl.textContent = className
         classButtonEl.appendChild(classNameEl)
-        classButtonEl.setAttribute("id", className)
+        classButtonEl.setAttribute("id", classCode)
         navSidebarEl.appendChild(classButtonEl)
         detectClassClick()
     })
@@ -408,6 +442,8 @@ function itemClickedStyling(){
     classInputLabelEl.textContent = "create a folder"
     structureTypeSpanEl.textContent = "folders"
 
+    const classRef = doc(db, "classes", classCode);
+    const classSnap = await getDoc(classRef);
 
     const materialIconInput = document.createElement("span")
     clearElement(classInputHeaderIcon)
@@ -424,16 +460,18 @@ function itemClickedStyling(){
 
     fetchFolders()
  
-    hideElement(classCodeInputEl)
-    hideElement(classCodeButtonEl)
+    hideAllChildren(classControlsDiv)
+    showElementFlex(classControlButtonsDiv)
+    showElementFlex(classControlInputsDiv)
     showElement(classFolderInputBtnEl)
     showElement(classFolderInputEl)
-
+    showElement(classCodeAdminCloseBtn)
+    classNameHeaderEl.textContent = classSnap.data().className
+    classCodeHeaderEl.textContent = classSnap.data().code
+    
     if(teacherStatus){
         showElement(classAdminBtn)
     
-    const classRef = doc(db, "classes", classCode);
-        const classSnap = await getDoc(classRef);
         if (classSnap.exists()) {
             classStudents = classSnap.data().students || [];
         }
@@ -800,16 +838,21 @@ async function renderAssignmentContent(messageData){
 }
 
 async function showAssignmentControls(){
-    hideElement(classFolderInputEl)
-    hideElement(classFolderInputBtnEl)
+    hideAllChildren(classControlsDiv)
+    showElementFlex(classControlButtonsDiv)
+    showElementFlex(classControlInputsDiv)
     showElement(classAssignmentInputBtnEl)
     showElement(classAssignmentInputEl)
+    showElement(classCodeAdminCloseBtn)
 }
 function showPostControls(){
+    hideElement(classAdminBtn)
+    hideAllChildren(classControlsDiv)
+    showElementFlex(classControlButtonsDiv)
+    showElementFlex(classControlInputsDiv)
     showElement(classPostInputBtnEl)
     showElement(classPostInputEl)
-    hideElement(classAssignmentInputBtnEl)
-    hideElement(classAssignmentInputEl)
+    showElement(classCodeAdminCloseBtn)
 }
 
 function dateFormatting(firebaseDate){
@@ -921,11 +964,25 @@ function addAllUsersBtn(){
 
  /* CSS FUNCTIONS*/
  function hideElement(element){
+    console.log(`hide :${element}`)
     element.style.display = "none"
  }
  function showElement(element){
+    if(element){
+        console.log(`show :${element}`)
     element.style.display = "block"
+    }
  }
  function showElementFlex(element){
+    console.log(`show flex :${element}`)
     element.style.display = "flex"
+ }
+ function hideAllChildren(element){
+    const allDescendants = element.querySelectorAll('*')
+    if(allDescendants){
+        for(let i = 0; i < allDescendants.length; i++){
+            console.log(allDescendants[i])
+            hideElement(allDescendants[i])
+        }
+    }
  }

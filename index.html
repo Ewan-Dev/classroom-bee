@@ -32,20 +32,26 @@
         <div id="dialog-container">
             <dialog id="class-admin" class="window class-controls-dialog">
                 <span class="header" id="class-input-header"><span  id="class-input-header-icon"></span><label for="class-input" id="class-input-label">join/create class</label></span>
-                
-                <input id="class-input" placeholder="code" class="control-input">
-
-                <input placeholder="add folder name" id="class-folder-admin-input" class="control-input">
-
-                <input placeholder="add assignment name" id="class-assignment-admin-input" class="control-input">
-               
-                <div class="class-controls-inputs-container">
-                <button id="class-add-button" class="control-button">join or create class</button>
-                <button id="class-folder-admin-button" class="control-button">create folder</button>
-                <button id="class-assignment-admin-button" class="control-button">create assignment</button>
-                <button id="close-class-control-button" class="close-control-button">close</button>
+                <div id="class-controls-container">
+                <div id="class-controls-inputs-container">
+                    <p id="instruction-message-class-controls">👋 Hello! If you have already been given a code for a class the simply join a class. If you're looking to create your own class then click the create a class button! ✨</p>
+                    <input id="class-input" placeholder="code" class="control-input">
+                    <input id="class-name" placeholder="class name" class="control-input">  
+                    <input placeholder="add folder name" id="class-folder-admin-input" class="control-input">
+                    <input placeholder="add assignment name" id="class-assignment-admin-input" class="control-input">
                 </div>
+                <div id="class-controls-buttons-container">
+                    <button class="control-button" id="join-class-initial">join class</button>
+                    <button class="control-button" id="create-class-initial">create class</button>
 
+                <button id="class-add-button">join or create class</button>
+                <button id="class-create-button" class="control-button close-control-button">create class</button>
+                <button class="control-button close-control-button" id="class-join-button">join class</button>
+                <button id="class-folder-admin-button" class="control-button close-control-button">create folder</button>
+                <button id="class-assignment-admin-button" class="control-button close-control-button">create assignment</button>
+                <button id="close-class-control-button" class=" control-button close-control-button coloured-button">close</button>
+                </div>
+            </div>
               </dialog>
         </div>
         <div id="classes-folders-assignments-container">
@@ -74,13 +80,17 @@
         </div>
         
         <div id="assignment-content-container">
+            <span id="class-info">
+                <p id="class-name-head">class name loading... </p>
+                <p id="class-code-head">loading...</p>
+            </span>
             <div id="class-post-admin-div" class="class-admin-container">
                 <input placeholder="add post text" id="class-post-admin-input" class="control-input">
                     <button class="material-symbols-rounded" id="class-post-admin-button">
                         send
                 </button>
             </div>
-            <h1 id="welcome-message"></h1>
+
             
             <div id="messages"></div>
         </div>

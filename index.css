@@ -1,6 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Trocchi&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
 
+p{
+    margin: 1em;
+}
 :root,
 input,
 button{
@@ -83,7 +86,7 @@ input::placeholder{
     display: flex;
     align-items: center;
     flex-direction: column;
-    height: auto;
+    height: fit-content;
     width: 25em;
 
 }
@@ -93,13 +96,21 @@ input::placeholder{
     flex-direction: column;
     justify-content: space-between;
     padding: 0;
-    height: 12em;
+    height: fit-content;
     width: 25em;
 }
 
-.class-controls-inputs-container{
+#class-controls-buttons-container{
     display: flex;
     flex-direction: row;
+    width: 100%; 
+}
+#class-controls-inputs-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    justify-content: center; 
+    width: 100%;
 }
 dialog::backdrop{
     background-color: rgba(255,255,255,0.7);
@@ -269,7 +280,7 @@ button.user-el:last-of-type
     font-size: 1.5em;
 }
 .control-input#class-input{
-    height: 4.5em;
+    height: 2.5em;
     width: 6.5em;
     font-size: 3.5em;
     text-transform: capitalize;
@@ -289,8 +300,6 @@ button.user-el:last-of-type
     border-radius: 0;
 }
 .close-control-button{
-    background-color: rgba(var(--primary-color),0.85);
-    color: rgb(var(--bg-color));
     height: 4.5em;
     width: 15em;
 }
@@ -407,3 +416,32 @@ button.selected-item{
     margin: 0.5em 0.65em 0.5em 0.75em;
 
   }
+#class-create-button{
+    width: 15em;
+}
+.coloured-button{
+    background-color: rgba(var(--primary-color),0.85);
+    color: rgb(var(--bg-color));
+}
+#class-info{
+    height: 2em;
+    background-color: rgba(var(--primary-color), 0.15);
+    padding: 0.25em 0.5em;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+#class-name-head,
+#class-code-head{
+    margin: 0;
+    background-color: rgba(--var(--bg-color));
+    font-size: 1em;
+    display: inline-block;
+}
+#class-code-head{
+    font-weight: bold;
+    background-color: #e8e8e8;
+    padding: 0.2em;
+    border-radius: 0.8em;
+}
