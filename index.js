@@ -62,6 +62,9 @@ const classCreateButtonEl = document.getElementById("class-add-button")
 const classNameInputButtonEl = document.getElementById("class-name")
 const classFolderInputBtnEl = document.getElementById("class-folder-admin-button")
 const classFolderInputEl = document.getElementById("class-folder-admin-input")
+const classFolderColorInputDiv = document.getElementById("class-folder-color-container")
+const classFolderColorInputLabelEl = document.getElementById("class-folder-color-input-label")
+const classFolderColorInputEl = document.getElementById("class-folder-color-input")
 const navSidebarEl = document.getElementById("nav-sidebar")
 const classBtnEls = document.getElementsByClassName("class-el")
 const classControlsDiv = document.getElementById("class-controls-container")
@@ -192,18 +195,12 @@ onAuthStateChanged(auth, (user)=>{
         hideElement(loggedOutViewEl)
         showElementFlex(loggedInViewEl)
         const displayName = user.displayName
-        hideElement(classCodeButtonEl)
-        hideElement(classCodeInputEl)
-        hideElement(classCodeAdminCloseBtn)
-        hideElement(classNameInputButtonEl)
-        hideElement(classCreateButtonEl)
-        hideElement(classJoinButtonEl)
-        hideElement(classFolderInputBtnEl)
-        hideElement(classFolderInputEl)
-        hideElement(classAssignmentInputBtnEl)
-        hideElement(classAssignmentInputEl)
-        hideElement(classPostInputBtnEl)
-        hideElement(classPostInputEl)
+        hideAllChildren(classControlsDiv)
+        showElementFlex(classControlButtonsDiv)
+        showElementFlex(classControlInputsDiv)
+        showElement(classControlInstructionsEl)
+        showElement(classJoinInitialButtonEl)
+        showElement(classCreateInitialBtn)
         hideElement(settingsDiv)
         addUserToDb(user)
         fetchClasses(user)
@@ -466,6 +463,9 @@ function itemClickedStyling(){
     showElement(classFolderInputBtnEl)
     showElement(classFolderInputEl)
     showElement(classCodeAdminCloseBtn)
+    showElement(classFolderColorInputDiv)
+    showElement(classFolderColorInputLabelEl)
+    showElement(classFolderColorInputEl)
     classNameHeaderEl.textContent = classSnap.data().className
     classCodeHeaderEl.textContent = classSnap.data().code
     
@@ -501,11 +501,14 @@ function itemClickedStyling(){
 async function addFolder(folderName){
     const folderRef = collection(db, "folders")
     const userId = auth.currentUser.uid
+    const color = classFolderColorInputEl.value
+    console.log(color)
     addDoc(folderRef, {
         class: classCode,
         folderName: folderName,
         teacher: userId,
-        members: arrayUnion(userId)
+        members: arrayUnion(userId),
+        folderColor:color
 
     })
 
@@ -520,18 +523,23 @@ async function addFolder(folderName){
         querySnapshot.forEach((doc)=>{
             const docData = doc.data()
             const classFolder = docData.folderName
-            renderFolder(classFolder)
+            const folderColor = docData.folderColor
+            renderFolder(classFolder, folderColor)
         })
         
     })
     
  }
- function renderFolder(folderName){
+ function renderFolder(folderName, folderColor){
     const folderButtonEl = document.createElement("button")
     const folderNameEl = document.createElement("p")
+    const folderColorMarkerEl = document.createElement("span")
     folderButtonEl.classList.add("folder-el")
     folderNameEl.textContent = folderName
     folderButtonEl.classList.add("class-sidebar-btn")
+    folderColorMarkerEl.classList.add("folder-color-marker")
+    folderColorMarkerEl.style.backgroundColor = folderColor
+    folderButtonEl.appendChild(folderColorMarkerEl)
     folderButtonEl.appendChild(folderNameEl)
     navSidebarEl.appendChild(folderButtonEl)
 

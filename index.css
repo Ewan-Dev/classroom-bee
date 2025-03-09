@@ -2,7 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
 
 p{
-    margin: 1em;
+    margin: 0.5em;
 }
 :root,
 input,
@@ -169,7 +169,7 @@ button.user-el
 
     margin: 0;
     width:100%;
-    padding: 0.25em;
+    padding: 0.45em;
     height: 3em;
     overflow: hidden;
     text-align: left;
@@ -443,5 +443,20 @@ button.selected-item{
     font-weight: bold;
     background-color: #e8e8e8;
     padding: 0.2em;
-    border-radius: 0.8em;
+    border-radius: 0.45em;
+}
+#class-folder-color-input{
+    width: 2em;
+    height: 2em;
+}
+#class-folder-color-container{
+    display: flex;
+
+}
+.folder-color-marker{
+    height: 1em;
+    width: 1em;
+    margin: 0.25em;
+    border-radius: 0.25em;
+    background-color: rgb(var(--primary-color));
 }
