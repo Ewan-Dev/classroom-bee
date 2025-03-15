@@ -771,7 +771,7 @@ function fetchUsers(students){
 }
 async function renderAssignmentContent(messageData){
     const messageDiv = document.createElement("div")
-    const messageContentEl = document.createElement("p")
+    const messageContentEl = document.createElement("pre")
     const messageSentByEl = document.createElement("p")
     const messageCreatedAt = document.createElement("p")
     const messageInfoDiv = document.createElement("div")
@@ -783,10 +783,12 @@ async function renderAssignmentContent(messageData){
     const formattedDate = dateFormatting(messageData.createdAt)
     let userAlreadyFetched = false
 
+    
         messageDiv.classList.add("assignment-content-div")
 
         messageContentEl.classList.add("assignment-content-p")
-        messageContentEl.textContent = messageData.body
+        
+         messageContentEl.textContent = messageData.body
 
         for(let userOfSet of usersSet){
             if(userOfSet.userUid === messageData.uid){
@@ -968,7 +970,6 @@ function addAllUsersBtn(){
 
     navSidebarEl.appendChild(allUsersButtonEl)
 }
-
 
  /* CSS FUNCTIONS*/
  function hideElement(element){

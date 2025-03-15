@@ -6,6 +6,8 @@ p{
 }
 :root,
 input,
+textarea,
+pre,
 button{
     --bg-color: 255, 255, 255;
     --primary-color:  0, 5, 5;
@@ -19,6 +21,7 @@ button{
         margin: 0;
     }
 input,
+textarea,
 button{
     background-color: rgba(var(--primary-color), 0.03);
     color: rgb(var(--primary-color));
@@ -28,11 +31,14 @@ button{
 }
 input{
     background-color:0.1rem solid rgb(var(--bg-color)) ;
+    text-transform: none;
 }
-p.assignment-content-p{
+.assignment-content-p{
     margin: 0.1em 0.2em;
     font-size: 1em;
     font-weight: normal;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
 }
 
 p.message-info{
@@ -208,15 +214,13 @@ button.user-el:last-of-type
     background-color: rgba(var(--primary-color), 0.075);
     color:rgba(var(--primary-color));
     margin: 0.4em;
-    padding: 0.1em 0.1em;
-    border-radius: 1em ;
+    padding: 0.2em 0.1em;
+    border-radius: 0.75em ;
     display: flex;
     flex-direction: row;
-    width:15em;
+    width:20em;
+    height: fit-content;
 
-}
-.assignment-content-p{
-    margin:0;
 }
 .label-input-container{
     display: block;
@@ -274,7 +278,6 @@ button.user-el:last-of-type
     margin:  0.2em 0 0.2em 0;
     border-radius: 0.4em;
     font-size: 3.5em;
-    text-transform: capitalize;
     display: flex;
     justify-items: center;
     font-size: 1.5em;
@@ -333,6 +336,7 @@ button.selected-item{
     display: flex;
     flex-direction: row;
     align-items: center;
+    margin: 1em;
 }
 .user-img-btn{
     width:2em;
@@ -360,7 +364,7 @@ button.selected-item{
 }
 #class-post-admin-input{
     width: 14em;
-    height: 2em;
+    height: fit-content;
     font-size: 1em;
     background-color: rgb(var(--bg-color));
     margin: 0.25em;
@@ -371,6 +375,8 @@ button.selected-item{
     flex-direction: row;
     background-color: rgba(var(--primary-color),0.05);
     width: 100%;
+    height: fit-content;
+    max-height: 6em ;
 }
 #class-post-admin-button{
     height: 1.33em;
