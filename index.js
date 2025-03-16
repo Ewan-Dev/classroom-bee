@@ -126,7 +126,6 @@ signInBtnEl.addEventListener("click", authSignInWithEmailAndPassword)
 signInWithGoogleButton.addEventListener("click", authGoogle)
 classAdminBtn.addEventListener("click", function(){
     classAdminDialog.showModal()
-    hideAllChildren(classControlsDiv)
     
 })
 
@@ -177,7 +176,9 @@ classCreateInitialBtn.addEventListener("click", function(){
 classJoinButtonEl.addEventListener("click", function(){
     classAdminDialog.close()
     classCode = classCodeInputEl.value
-    joinClass(classCode)
+    const classCodeUpperCase = classCode.toUpperCase()
+    console.log(classCodeUpperCase)
+    joinClass(classCodeUpperCase)
 })
 classCodeButtonEl.addEventListener("click", function(){
     const classNameValue = classNameInputButtonEl.value
