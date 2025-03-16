@@ -126,6 +126,8 @@ signInBtnEl.addEventListener("click", authSignInWithEmailAndPassword)
 signInWithGoogleButton.addEventListener("click", authGoogle)
 classAdminBtn.addEventListener("click", function(){
     classAdminDialog.showModal()
+    hideAllChildren(classControlsDiv)
+    
 })
 
 classFolderInputBtnEl.addEventListener("click", function(){
@@ -196,6 +198,8 @@ onAuthStateChanged(auth, (user)=>{
         showElementFlex(loggedInViewEl)
         const displayName = user.displayName
         hideAllChildren(classControlsDiv)
+        hideElement(classPostInputBtnEl)
+        hideElement(classPostInputEl)
         showElementFlex(classControlButtonsDiv)
         showElementFlex(classControlInputsDiv)
         showElement(classControlInstructionsEl)
