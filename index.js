@@ -763,7 +763,6 @@ function fetchUsers(students){
     materialIconType.classList.add("material-symbols-rounded")
     materialIconType.classList.add("button-icon-el")  
     typeSpanStructureIcon.appendChild(materialIconType)
-
     addAllUsersBtn()
     if(students){
     students.forEach((user)=>{
@@ -772,6 +771,8 @@ function fetchUsers(students){
        
     })
     }
+    itemClickedStyling()
+
     
 }
 async function renderAssignmentContent(messageData){
