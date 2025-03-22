@@ -468,7 +468,7 @@ function itemClickedStyling(){
     showElement(classFolderInputBtnEl)
     showElement(classFolderInputEl)
     showElement(classCodeAdminCloseBtn)
-    showElement(classFolderColorInputDiv)
+    showElementFlex(classFolderColorInputDiv)
     showElement(classFolderColorInputLabelEl)
     showElement(classFolderColorInputEl)
     classNameHeaderEl.textContent = classSnap.data().className
