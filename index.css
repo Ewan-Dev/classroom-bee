@@ -1,8 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Trocchi&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
 p{
-    margin: 1em;
+    margin: 0.5em;
 }
 :root,
 input,
@@ -365,7 +366,7 @@ button.selected-item{
     color: rgba(var(--primary-color)) ;
 }
 #class-post-admin-input{
-    width: 14em;
+    width: fit-content;
     height: fit-content;
     font-size: 1em;
     background-color: rgb(var(--bg-color));
@@ -472,4 +473,65 @@ button.selected-item{
     margin: 0.25em;
     border-radius: 0.25em;
     background-color: rgb(var(--primary-color));
+}
+#mega-header{
+    font-family: "Poppins";
+    font-size: 4em;
+    text-align: center;
+    line-height: 1.2em;
+    max-width: 10em;
+    margin: 0.5em auto 0 auto;
+    z-index: 1;
+}
+.red-text{
+    color: #be5050;
+}
+.white-text{
+    color: #fff;
+}
+.highlight-blue{
+    background-color: #505fbe;
+}
+#homepage-image{
+    display: block;
+    width:90%;
+    margin: 0.5em auto 0 auto;
+
+}
+.login-button{
+    background-color: inherit;
+    color: #f1f1f1;
+    width:fit-content ;
+    padding: 0;
+    height: 2.5em;
+    margin: 0 auto;
+    display: block;
+
+}
+.login-button-form{
+    border-radius: 50%;
+    margin: 1em;
+}
+#login-section-home{
+    background-color: #f4f4f4;
+    padding: 0.5em;
+    border-radius: 2em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+#login-button-el.material-symbols-rounded{
+    color: #fff;
+}
+#login-button-el{
+    background-color: #151515;
+    width: fit-content;
+    display: flex;
+    align-items: center;
+    margin: 0.5em;
+
+}
+.login-button{
+    display: inline;
+    font-weight: bold;
 }

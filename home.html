@@ -1,0 +1,135 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="./index.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded"
+      rel="stylesheet">
+    <title>Classroom Bee</title>
+</head>
+<body>
+    <section id="logged-out-view">
+        <div id="login" class="window">
+            <header class="window-header"><b>🔐 Login & Signup</b></header>
+            <div id="inputs-auth">
+            <input placeholder=" 📧 email" id="email" type="email" class="input-auth">
+            <input placeholder=" 🔑 password" id="password" type="password" class="input-auth">
+            </div>
+            <div id="buttons-auth">            
+            <button id="sign-up" class="button-auth">Sign up</button>
+            <button id="sign-in" class="button-auth" >Sign in</button>
+            <button id="google-signin-btn" class="button-auth"><svg id="google-logo" fill="#000000" height="800px" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><path d="M473.16,221.48l-2.26-9.59H262.46v88.22H387c-12.93,61.4-72.93,93.72-121.94,93.72-35.66,0-73.25-15-98.13-39.11a140.08,140.08,0,0,1-41.8-98.88c0-37.16,16.7-74.33,41-98.78s61-38.13,97.49-38.13c41.79,0,71.74,22.19,82.94,32.31l62.69-62.36C390.86,72.72,340.34,32,261.6,32h0c-60.75,0-119,23.27-161.58,65.71C58,139.5,36.25,199.93,36.25,256S56.83,369.48,97.55,411.6C141.06,456.52,202.68,480,266.13,480c57.73,0,112.45-22.62,151.45-63.66,38.34-40.4,58.17-96.3,58.17-154.9C475.75,236.77,473.27,222.12,473.16,221.48Z"/></svg>Sign in with Google</button>
+            <p id="signup-error"></p>
+        </div>
+        
+    </section>  
+
+
+    <section id="logged-in-view">
+        
+    <section id="main-section">
+        <div id="dialog-container">
+            <dialog id="class-admin" class="window class-controls-dialog">
+                <span class="header" id="class-input-header"><span  id="class-input-header-icon"></span><label for="class-input" id="class-input-label">join/create class</label></span>
+                <div id="class-controls-container">
+                <div id="class-controls-inputs-container">
+                    <p id="instruction-message-class-controls">👋 Hello! If you have already been given a code for a class the simply join a class. If you're looking to create your own class then click the create a class button! ✨</p>
+                    <input id="class-input" placeholder="code" class="control-input">
+                    <input id="class-name" placeholder="class name" class="control-input">  
+                    <input placeholder="add folder name" id="class-folder-admin-input" class="control-input">
+                    <div id="class-folder-color-container">
+                    <label for="class-folder-color-input" id="class-folder-color-input-label">folder color:</label>
+                    <input id="class-folder-color-input" type="color">
+                    </div>
+                    <input placeholder="add assignment name" id="class-assignment-admin-input" class="control-input">
+                </div>
+                <div id="class-controls-buttons-container">
+                    <button class="control-button" id="join-class-initial">join class</button>
+                    <button class="control-button" id="create-class-initial">create class</button>
+
+                <button id="class-add-button">join or create class</button>
+                <button id="class-create-button" class="control-button close-control-button">create class</button>
+                <button class="control-button close-control-button" id="class-join-button">join class</button>
+                <button id="class-folder-admin-button" class="control-button close-control-button">create folder</button>
+                <button id="class-assignment-admin-button" class="control-button close-control-button">create assignment</button>
+                <button id="close-class-control-button" class=" control-button close-control-button coloured-button">close</button>
+                </div>
+            </div>
+              </dialog>
+        </div>
+        <div id="classes-folders-assignments-container">
+                <div class="control-inputs">   
+        
+
+                
+
+            </div>
+            <span id="type-header" class="header">
+                <div id="type-label-icon-container">
+                    <span id="type-span-structure-icon"></span>
+                    <p id="type-header-label"></p>
+                </div>
+                <button id="class-admin-button">+</button>
+            </span>
+            <div id="nav-sidebar">
+            </div>
+            <div id="folders">
+                
+            </div>
+            <div id="assignments"></div>
+            <div id="students">
+                
+            </div>
+        </div>
+        
+        <div id="assignment-content-container">
+            <span id="class-info">
+                <p id="class-name-head">class name loading... </p>
+                <p id="class-code-head">loading...</p>
+            </span>
+            <div id="class-post-admin-div" class="class-admin-container">
+                <textarea  placeholder="add post text" class="control-input"></textarea>
+                    <button class="material-symbols-rounded" >
+                        send
+                </button>
+            </div>
+
+            
+            <div id="messages"></div>
+        </div>
+    </section>
+
+    <button id="settings-btn">⚙️ settings</button>
+    <div id="settings-container">
+        <h1>Settings</h1>
+
+    <div class="label-input-container">
+        <label for="auth-display-name-input-el">your name:</label>
+        <input id="auth-display-name-input-el">
+        <button id="auth-display-name-btn-el">update</button>
+        </div>
+
+        <div class="label-input-container">
+            <label for="auth-pfp-input-el">your profile picture: URL</label>
+            <input id="auth-pfp-input-el">
+            <button id="auth-pfp-btn-el">update</button>
+            <img id="settings-pfp-el">
+            </div>
+            <br>
+            <p class="notice">🚧 email and password change coming soon</p>
+            <div class="label-input-container">
+                <label for="auth-password-input-el">new password</label>
+                <input id="auth-password-input-el">
+            </div>
+
+            <div class="label-input-container">
+                <label for="auth-email-input-el">new email</label>
+                <input id="auth-email-input-el">
+            </div>
+
+    </div>
+    <script src="./index.js" type="module"></script>
+</body>
+</html>
