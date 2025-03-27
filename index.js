@@ -28,13 +28,13 @@ import { getFirestore,
  } from 'https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js'
 
 const firebaseConfig = {
-    apiKey: "AIzaSyAvSVTh6eBo3crVh0bJXnMuYc40Le-EU68",
-    authDomain: "classroom-bee-app.firebaseapp.com",
-    projectId: "classroom-bee-app",
-    storageBucket: "classroom-bee-app.firebasestorage.app",
-    messagingSenderId: "388434713606",
-    appId: "1:388434713606:web:fa93d94a73c1d9af2df787",
-    measurementId: "G-PL13DDWYNX"
+    apiKey: "AIzaSyBYQovi1icrOTFbMnFUg4CaNrcVdR5iAbA",
+    authDomain: "classroom-bee.firebaseapp.com",
+    projectId: "classroom-bee",
+    storageBucket: "classroom-bee.firebasestorage.app",
+    messagingSenderId: "995259288468",
+    appId: "1:995259288468:web:4d62af03b01830b7f09d81",
+    measurementId: "G-DW21YQ9SWH"
 }
 const app = initializeApp(firebaseConfig)
 const auth = getAuth(app)
@@ -432,6 +432,7 @@ function itemClickedStyling(){
 
  function clearElement(element){
     element.innerHTML = ""
+    element.value = ""
     console.log("element clared")
 
  }
@@ -616,6 +617,7 @@ async function addPost(content, recipientUid){
         }
         ) 
     }
+    clearElement(classPostInputEl)
 }
 
 
@@ -763,6 +765,7 @@ function fetchUsers(students){
     materialIconType.classList.add("material-symbols-rounded")
     materialIconType.classList.add("button-icon-el")  
     typeSpanStructureIcon.appendChild(materialIconType)
+itemClickedStyling()
     addAllUsersBtn()
     if(students){
     students.forEach((user)=>{
@@ -771,8 +774,6 @@ function fetchUsers(students){
        
     })
     }
-    itemClickedStyling()
-
     
 }
 async function renderAssignmentContent(messageData){
