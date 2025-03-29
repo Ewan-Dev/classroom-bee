@@ -483,15 +483,7 @@ button.selected-item{
     margin: 0.5em auto 0 auto;
     z-index: 1;
 }
-.red-text{
-    color: #be5050;
-}
-.white-text{
-    color: #fff;
-}
-.highlight-blue{
-    background-color: #505fbe;
-}
+
 #homepage-image{
     display: block;
     width:90%;
@@ -513,25 +505,101 @@ button.selected-item{
     margin: 1em;
 }
 #login-section-home{
-    background-color: #f4f4f4;
+    background-color: #edede9;
     padding: 0.5em;
-    border-radius: 2em;
+    border-radius: 1em;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 #login-button-el.material-symbols-rounded{
-    color: #fff;
+    color: #908579;
 }
 #login-button-el{
-    background-color: #151515;
+    background-color: #e3d5ca;
     width: fit-content;
     display: flex;
     align-items: center;
     margin: 0.5em;
+    border: 0;
 
 }
 .login-button{
     display: inline;
     font-weight: bold;
+    border: 0;
+    color: #908579;
+}
+#top-section-home{
+    background-image: url(./assets/homepage/gradient.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 20em;
+    width: 95%;
+    margin: 0 auto;
+    border-radius: 2em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#homepage{
+    background-color: #2E2E2E;
+    padding: 1em;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+}
+#top-section-header{
+color: #908579;
+font-size: 3em;
+font-weight: bold;
+text-align: center;
+flex-wrap: wrap;
+padding: 1em;
+}
+.feature-container-dark{
+    background-color: #BEA496;
+}
+.feature-container-light{
+        background-color: #E3D5CA;
+}
+.feature-container{
+    height: fit-content;
+    width: 14em;
+    height: 14em;
+    margin: 1em;
+    border-radius: 2.5em;
+    padding:  1em 1em 0 1em;
+    display: flex;
+    box-sizing: border-box;
+    flex-direction: column;
+    overflow: hidden;
+    align-content: space-between;
+    justify-content: space-between;
+    
+}
+.feature-container-text-light{
+    color: #EDEDE9;
+}
+.feature-container-text-dark{
+    color: #BEA496;
+}
+.feature-container-text{
+    font-size:
+    1.5em;
+    text-align: center;
+    margin: 0.5em auto;
+}
+.feature-container-image{
+    height: 8em;
+    border-radius: 0.6em 0.6em 0 0;
+    margin: 0 auto;
+}
+#site-features-section-home{
+    display: flex;
+    flex-wrap: wrap;
+    width: fit-content;
+    height: fit-content;
+    margin: 0 auto;
+    justify-content: center;
 }
