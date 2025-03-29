@@ -1,7 +1,9 @@
 # 🐝 Classroom Bee 📎
 
 *Your streamlined paperless classroom*
-
+<hr>
+<b> 💡 If you wont to host this locally, firebase will only let you host on localhost</b>
+<hr>
 
 ## 🍔 Tech Stack
 
