@@ -382,13 +382,16 @@ button.selected-item{
     max-height: 6em ;
 }
 #class-post-admin-button{
-    height: 1.33em;
-    width: 1.33em;
+    height:fit-content;
+    width: fit-content;
     border-radius: 0.25em;
-    padding: 0.1em;
+    padding: 0;
     display: flex;
     justify-content: center;
     align-items: center;
+    margin: 0;
+    border-radius: 0.75em;
+    border: #908579 solid 0.20em;
 }
 
 .material-symbols-rounded {
@@ -498,6 +501,7 @@ button.selected-item{
     height: 2.5em;
     margin: 0 auto;
     display: block;
+    border-radius: 1em;
 
 }
 .login-button-form{
@@ -505,7 +509,7 @@ button.selected-item{
     margin: 1em;
 }
 #login-section-home{
-    background-color: #edede9;
+    background-color: #f5ebe0;
     padding: 0.5em;
     border-radius: 1em;
     display: flex;
@@ -520,8 +524,9 @@ button.selected-item{
     width: fit-content;
     display: flex;
     align-items: center;
-    margin: 0.5em;
+    margin: 0;
     border: 0;
+    border-radius: 0.6em;
 
 }
 .login-button{
@@ -565,8 +570,8 @@ padding: 1em;
 }
 .feature-container{
     height: fit-content;
-    width: 14em;
-    height: 14em;
+    width: 12em;
+    height: 12em;
     margin: 1em;
     border-radius: 2.5em;
     padding:  1em 1em 0 1em;
@@ -591,7 +596,7 @@ padding: 1em;
     margin: 0.5em auto;
 }
 .feature-container-image{
-    height: 8em;
+    height: 6em;
     border-radius: 0.6em 0.6em 0 0;
     margin: 0 auto;
 }
@@ -599,7 +604,12 @@ padding: 1em;
     display: flex;
     flex-wrap: wrap;
     width: fit-content;
+    min-width: 12em;
     height: fit-content;
     margin: 0 auto;
     justify-content: center;
+}
+.homepage-text{
+    color: #908579;
+    margin: 0.5em;
 }
